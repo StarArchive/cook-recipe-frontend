@@ -1,15 +1,17 @@
+import { useUser } from "@/hooks/useUser";
 import {
+  ActionIcon,
   Anchor,
   AppShell,
   Burger,
   Button,
   Group,
   Text,
+  UnstyledButton,
   useComputedColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { useEffect, useState } from "react";
+import { IconLogout } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -19,22 +21,7 @@ interface Props {
 export default function RootLayout({ children }: Props) {
   const [opened, { toggle }] = useDisclosure();
   const computedColorScheme = useComputedColorScheme("light");
-  const [isLogged, setIsLogged] = useState(false);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token && token.length > 0) setIsLogged(true);
-  }, []);
-  const onLogoutClick = () => {
-    localStorage.removeItem("token");
-    setIsLogged(false);
-    notifications.show({
-      title: "退出登录成功",
-      message: "您已成功退出登录",
-      color: "blue",
-      position: "top-center",
-    });
-  };
+  const user = useUser();
 
   return (
     <AppShell header={{ height: 60 }} padding="md">
@@ -58,8 +45,19 @@ export default function RootLayout({ children }: Props) {
             </Anchor>
           </Group>
           <Group>
-            {isLogged ? (
-              <Button onClick={onLogoutClick}>退出</Button>
+            {user?.userName ? (
+              <>
+                <Text>{user.userName}</Text>
+                <UnstyledButton onClick={user.logout}>
+                  <ActionIcon
+                    size={32}
+                    variant="default"
+                    aria-label="Logout"
+                  >
+                    <IconLogout size={24} />
+                  </ActionIcon>
+                </UnstyledButton>
+              </>
             ) : (
               <>
                 <Button component={Link} to="/register" variant="subtle">

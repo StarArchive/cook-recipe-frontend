@@ -1,5 +1,5 @@
-import RegisterForm from "../components/RegisterForm";
-import AccountFormLayout from "../layouts/AccountFormLayout";
+import RegisterForm from "@/components/RegisterForm";
+import AccountFormLayout from "@/layouts/AccountFormLayout";
 
 export default function Register() {
   return (

@@ -1,4 +1,4 @@
-import { Flex } from "@mantine/core";
+import { Flex, Paper, Title } from "@mantine/core";
 import { JSX, ReactNode } from "react";
 
 interface Props {
@@ -8,17 +8,21 @@ interface Props {
 
 export default function AccountFormLayout({ title, children }: Props) {
   return (
-    <Flex mih="screen" className="min-h-screen bg-gray-50">
+    <Flex mih="100vh">
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">
+          <Title
+            order={2}
+            className="mt-6 text-center text-2xl font-bold tracking-tight"
+          >
             {title}
-          </h2>
+          </Title>
+          <h2></h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div className="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
+          <Paper shadow="sm" withBorder p="xl">
             {children}
-          </div>
+          </Paper>
         </div>
       </div>
     </Flex>

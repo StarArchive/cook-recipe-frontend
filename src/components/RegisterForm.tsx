@@ -1,3 +1,4 @@
+import { useUser } from "@/hooks/useUser";
 import {
   Button,
   Checkbox,
@@ -31,6 +32,7 @@ export default function RegisterForm() {
     },
   });
   const navigate = useNavigate();
+  const user = useUser();
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(values: typeof form.values) {
@@ -67,7 +69,8 @@ export default function RegisterForm() {
         color: "green",
         position: "top-center",
       });
-      setTimeout(() => navigate("/"), 2000);
+      user?.syncUser();
+      setTimeout(() => navigate("/"), 1500);
     } catch (error) {
       notifications.show({
         title: "错误",

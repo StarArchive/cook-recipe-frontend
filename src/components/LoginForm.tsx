@@ -1,3 +1,4 @@
+import { useUser } from "@/hooks/useUser";
 import { Button, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -22,6 +23,7 @@ export default function LoginForm({ className }: Props) {
       password: (value) => (value.length >= 6 ? null : "密码至少6位"),
     },
   });
+  const user = useUser();
 
   async function handleSubmit(values: typeof form.values) {
     if (submitting) return;
@@ -53,7 +55,8 @@ export default function LoginForm({ className }: Props) {
         color: "green",
         position: "top-center",
       });
-      setTimeout(() => navigate("/"), 2000);
+      user?.syncUser();
+      setTimeout(() => navigate("/"), 1500);
     } catch (error) {
       notifications.show({
         title: "错误",
