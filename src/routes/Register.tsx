@@ -1,13 +1,10 @@
-import { Container } from "@mantine/core";
 import RegisterForm from "../components/RegisterForm";
-import RootLayout from "../layouts/RootLayout";
+import AccountFormLayout from "../layouts/AccountFormLayout";
 
 export default function Register() {
   return (
-    <RootLayout>
-      <Container size="xs">
-        <RegisterForm />
-      </Container>
-    </RootLayout>
+    <AccountFormLayout title="注册账号">
+      <RegisterForm />
+    </AccountFormLayout>
   );
 }

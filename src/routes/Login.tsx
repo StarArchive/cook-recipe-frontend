@@ -1,13 +1,10 @@
-import { Container } from "@mantine/core";
 import LoginForm from "../components/LoginForm";
-import RootLayout from "../layouts/RootLayout";
+import AccountFormLayout from "../layouts/AccountFormLayout";
 
 export default function Login() {
   return (
-    <RootLayout>
-      <Container size="xs">
-        <LoginForm />
-      </Container>
-    </RootLayout>
+    <AccountFormLayout title="账户登录">
+      <LoginForm />
+    </AccountFormLayout>
   );
 }
