@@ -23,14 +23,32 @@ async function fetchUserInfo() {
   return json;
 }
 
+interface UserInfo {
+  id: number;
+  name: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function getLocalUserInfo(): UserInfo | null {
+  const userInfo = localStorage.getItem("userInfo");
+  if (!userInfo) return null;
+
+  return JSON.parse(userInfo);
+}
+
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(
+    getLocalUserInfo()?.name ?? null
+  );
 
   const syncUser = useCallback(async () => {
     const userInfo = await fetchUserInfo();
 
     if (!userInfo) return;
     setUserName(userInfo.name);
+    localStorage.setItem("userInfo", JSON.stringify(userInfo));
   }, []);
 
   useEffect(() => {
