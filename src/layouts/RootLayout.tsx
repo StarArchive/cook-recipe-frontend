@@ -7,11 +7,10 @@ import {
   Button,
   Group,
   Text,
-  UnstyledButton,
   useComputedColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconLogout } from "@tabler/icons-react";
+import { TbLogout } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -48,15 +47,14 @@ export default function RootLayout({ children }: Props) {
             {user?.userName ? (
               <>
                 <Text>{user.userName}</Text>
-                <UnstyledButton onClick={user.logout}>
-                  <ActionIcon
-                    size={32}
-                    variant="default"
-                    aria-label="Logout"
-                  >
-                    <IconLogout size={24} />
-                  </ActionIcon>
-                </UnstyledButton>
+                <ActionIcon
+                  size={32}
+                  variant="default"
+                  aria-label="Logout"
+                  onClick={user.logout}
+                >
+                  <TbLogout size={24} />
+                </ActionIcon>
               </>
             ) : (
               <>
