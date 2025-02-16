@@ -1,4 +1,3 @@
-import { useUser } from "@/hooks/useUser";
 import {
   Button,
   Checkbox,
@@ -11,28 +10,29 @@ import { notifications } from "@mantine/notifications";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function RegisterForm() {
-  const form = useForm({
-    mode: "uncontrolled",
-    initialValues: {
-      name: "",
-      email: "",
-      acceptTOS: false,
-      password: "",
-      password2: "",
-    },
+const REGISTER_FORM_CONFIG = {
+  mode: "uncontrolled",
+  initialValues: {
+    name: "",
+    email: "",
+    acceptTOS: false,
+    password: "",
+    password2: "",
+  },
 
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "无效邮箱"),
-      acceptTOS: (value) => (value ? null : "请同意使用协议"),
-      password: (value) => (value.length >= 6 ? null : "密码至少6位"),
-      password2: (value, values) => {
-        return value === values.password ? null : "两次密码不一致";
-      },
+  validate: {
+    email: (value: string) => (/^\S+@\S+$/.test(value) ? null : "无效邮箱"),
+    acceptTOS: (value: boolean) => (value ? null : "请同意使用协议"),
+    password: (value: string) => (value.length >= 6 ? null : "密码至少6位"),
+    password2: (value: string, values: { password: string }) => {
+      return value === values.password ? null : "两次密码不一致";
     },
-  });
+  },
+} as const;
+
+export default function RegisterForm() {
   const navigate = useNavigate();
-  const user = useUser();
+  const form = useForm(REGISTER_FORM_CONFIG);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(values: typeof form.values) {
@@ -69,7 +69,7 @@ export default function RegisterForm() {
         color: "green",
         position: "top-center",
       });
-      user?.syncUser();
+
       setTimeout(() => navigate("/"), 1500);
     } catch (error) {
       notifications.show({

@@ -1,6 +1,7 @@
+import { Container, SimpleGrid } from "@mantine/core";
+
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
-import { Container, SimpleGrid } from "@mantine/core";
 
 const recipes = new Array(10).fill({
   title: "薄饼",

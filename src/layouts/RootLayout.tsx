@@ -1,17 +1,15 @@
-import { useUser } from "@/hooks/useUser";
 import {
-  ActionIcon,
   Anchor,
   AppShell,
   Burger,
-  Button,
   Group,
   Text,
   useComputedColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { TbLogout } from "react-icons/tb";
 import { Link } from "react-router-dom";
+
+import UserActions from "@/components/UserActions";
 
 interface Props {
   children: React.ReactNode;
@@ -20,7 +18,6 @@ interface Props {
 export default function RootLayout({ children }: Props) {
   const [opened, { toggle }] = useDisclosure();
   const computedColorScheme = useComputedColorScheme("light");
-  const user = useUser();
 
   return (
     <AppShell header={{ height: 60 }} padding="md">
@@ -44,28 +41,7 @@ export default function RootLayout({ children }: Props) {
             </Anchor>
           </Group>
           <Group>
-            {user?.userName ? (
-              <>
-                <Text>{user.userName}</Text>
-                <ActionIcon
-                  size={32}
-                  variant="default"
-                  aria-label="Logout"
-                  onClick={user.logout}
-                >
-                  <TbLogout size={24} />
-                </ActionIcon>
-              </>
-            ) : (
-              <>
-                <Button component={Link} to="/register" variant="subtle">
-                  注册
-                </Button>
-                <Button component={Link} to="/login">
-                  登录
-                </Button>
-              </>
-            )}
+            <UserActions />
           </Group>
         </Group>
       </AppShell.Header>

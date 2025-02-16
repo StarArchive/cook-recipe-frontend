@@ -1,4 +1,3 @@
-import RootLayout from "@/layouts/RootLayout";
 import {
   Container,
   Flex,
@@ -8,6 +7,8 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+
+import RootLayout from "@/layouts/RootLayout";
 
 export default function Recipe() {
   return (
