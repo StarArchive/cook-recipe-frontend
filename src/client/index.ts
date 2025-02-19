@@ -1,6 +1,12 @@
 import { notifications } from "@mantine/notifications";
 
-import type { LoginDto, User } from "./types";
+import type {
+  CreateRecipeDto,
+  LoginDto,
+  Recipe,
+  RegisterDto,
+  User,
+} from "./types";
 
 const BASE_URL = import.meta.env.VITE_API_BASE
   ? import.meta.env.VITE_API_BASE
@@ -14,9 +20,7 @@ export function logout() {
     color: "blue",
     position: "top-center",
   });
-  setTimeout(() => {
-    window.location.reload();
-  }, 1500);
+  window.location.reload();
 }
 
 export function getUrl(path: string) {
@@ -43,6 +47,53 @@ export async function login(loginDto: LoginDto) {
     body: JSON.stringify(loginDto),
     headers: {
       "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
+}
+
+export async function register(registerDto: RegisterDto) {
+  const response = await fetch(getUrl("/auth/register"), {
+    method: "POST",
+    body: JSON.stringify(registerDto),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
+}
+
+export async function createRecipe(createRecipeDto: CreateRecipeDto) {
+  const response = await fetch(getUrl("/recipes"), {
+    method: "POST",
+    body: JSON.stringify(createRecipeDto),
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
+}
+
+export async function getRecipes(): Promise<Recipe[]> {
+  const response = await fetch(getUrl("/recipes"), {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
 
