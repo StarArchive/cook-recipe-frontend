@@ -43,8 +43,7 @@ export default function LoginForm({ className }: Props) {
         position: "top-center",
         autoClose: 1500,
       });
-
-      setTimeout(() => navigate("/"), 1500);
+      navigate("/");
     },
     onError: (error) => {
       notifications.show({
