@@ -10,18 +10,18 @@ import {
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { TbPlus, TbX } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
-interface Recipe {
-  title: string;
-  description: string;
-  published: boolean;
-  ingredients: { name: string; quantity: string }[];
-  steps: { content: string }[];
-}
+import { createRecipe } from "@/client";
+import { CreateRecipeDto } from "@/client/types";
 
 export default function RecipeForm() {
-  const form = useForm<Recipe>({
+  const navigate = useNavigate();
+  const form = useForm<CreateRecipeDto>({
     initialValues: {
       title: "",
       description: "",
@@ -29,11 +29,44 @@ export default function RecipeForm() {
       ingredients: [],
       steps: [],
     },
+
+    transformValues: (values) => ({
+      ...values,
+      steps: values.steps.map((step, idx) => ({
+        step: idx,
+        content: step.content,
+      })),
+    }),
+  });
+  const [pending, setPending] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: createRecipe,
+    onSuccess: (data) => {
+      console.log(data);
+      notifications.show({
+        title: "创建食谱成功",
+        message: "发布成功！\n即将跳转到食谱页",
+        color: "green",
+        position: "top-center",
+        autoClose: 1500,
+      });
+      navigate("/");
+    },
+    onError: (error) => {
+      notifications.show({
+        title: "创建食谱失败",
+        message: error.message || "未知错误",
+        color: "red",
+        position: "top-center",
+      });
+      console.error(error);
+    },
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    console.log("Submitted Recipe:", values);
-    form.reset();
+    setPending(true);
+    mutation.mutate(values, { onError: () => setPending(false) });
   };
 
   return (
