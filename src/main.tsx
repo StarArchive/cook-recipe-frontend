@@ -29,7 +29,7 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   { path: "/recipe/:id", element: <Recipe /> },
-  { path: "/submit-recipe", element: <Upload /> },
+  { path: "/recipe/new", element: <Upload /> },
 ]);
 
 const queryClient = new QueryClient();
