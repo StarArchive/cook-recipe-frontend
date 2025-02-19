@@ -1,27 +1,40 @@
 import { Button, HoverCard, Text } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TbLogout, TbUpload } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
 import { getUser, logout } from "@/client";
 
 export default function UserActions() {
-  const { data, isFetched } = useQuery({
+  const { data, isFetched, error } = useQuery({
     queryKey: ["users/me"],
     queryFn: async () => await getUser(),
     retry: false,
   });
+
   const [isClicked, setIsClicked] = useState(false);
 
-  if (!isFetched) return null;
+  useEffect(() => {
+    if (error?.message == "Unauthorized" && localStorage.getItem("token")) {
+      localStorage.removeItem("token");
+      notifications.show({
+        title: "登录失效",
+        message: "请重新登录",
+        color: "red",
+        position: "top-center",
+      });
+    }
+  }, [error?.message]);
 
+  if (!isFetched) return null;
   if (data?.name)
     return (
       <>
         <HoverCard>
           <HoverCard.Target>
-            <Text>{data?.name}</Text>
+            <Text>{data.name}</Text>
           </HoverCard.Target>
           <HoverCard.Dropdown>
             <Button
@@ -41,7 +54,7 @@ export default function UserActions() {
 
         <Button
           component={Link}
-          to="/submit-recipe"
+          to="/recipe/new"
           rightSection={<TbUpload size={14} />}
         >
           上传
