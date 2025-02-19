@@ -7,8 +7,11 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { register } from "@/client";
 
 const REGISTER_FORM_CONFIG = {
   mode: "uncontrolled",
@@ -31,56 +34,40 @@ const REGISTER_FORM_CONFIG = {
 } as const;
 
 export default function RegisterForm() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const form = useForm(REGISTER_FORM_CONFIG);
-  const [submitting, setSubmitting] = useState(false);
+  const [pending, setPending] = useState(false);
 
-  async function handleSubmit(values: typeof form.values) {
-    if (submitting) return;
+  const mutation = useMutation({
+    mutationFn: register,
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.accessToken);
+      queryClient.invalidateQueries({ queryKey: ["users/me"] });
 
-    try {
-      setSubmitting(true);
-      const resp = await fetch("http://localhost:3000/v1/auth/register", {
-        method: "POST",
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          password: values.password,
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
-      const json = await resp.json();
-
-      if (!resp.ok) {
-        notifications.show({
-          title: "注册失败",
-          message: json.message || "未知错误",
-          color: "red",
-          position: "top-center",
-        });
-        setSubmitting(false);
-        return;
-      }
-
-      localStorage.setItem("token", json.accessToken);
       notifications.show({
         title: "注册成功",
         message: "欢迎回来！\n即将跳转到首页",
         color: "green",
         position: "top-center",
+        autoClose: 1500,
       });
-
-      setTimeout(() => navigate("/"), 1500);
-    } catch (error) {
+      navigate("/");
+    },
+    onError: (error) => {
       notifications.show({
-        title: "错误",
-        message: "网络错误，请稍后重试",
+        title: "注册失败",
+        message: error.message || "未知错误",
         color: "red",
         position: "top-center",
       });
-      setSubmitting(false);
       console.error(error);
-    }
+    },
+  });
+
+  async function handleSubmit(values: typeof form.values) {
+    setPending(true);
+    mutation.mutate(values, { onError: () => setPending(false) });
   }
 
   return (
@@ -123,7 +110,9 @@ export default function RegisterForm() {
       />
 
       <Group justify="flex-end" mt="md">
-        <Button type="submit">提交</Button>
+        <Button disabled={pending} fullWidth type="submit">
+          提交
+        </Button>
       </Group>
     </form>
   );
