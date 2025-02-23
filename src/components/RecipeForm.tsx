@@ -11,16 +11,20 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { TbPlus, TbX } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 
-import { createRecipe } from "@/client";
+import { createRecipe, uploadRecipeCovers } from "@/client";
 import { CreateRecipeDto } from "@/client/types";
 
+import GalleryPhotoPicker from "./GalleryPhotoPicker";
+
 export default function RecipeForm() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [files, setFiles] = useState<File[]>([]);
   const form = useForm<CreateRecipeDto>({
     initialValues: {
       title: "",
@@ -28,6 +32,7 @@ export default function RecipeForm() {
       published: false,
       ingredients: [],
       steps: [],
+      images: [],
     },
 
     transformValues: (values) => ({
@@ -40,10 +45,34 @@ export default function RecipeForm() {
   });
   const [pending, setPending] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: createRecipe,
+  const uploadMutation = useMutation({
+    mutationFn: uploadRecipeCovers,
     onSuccess: (data) => {
-      console.log(data);
+      const successfulImages = data
+        .filter((response) => response.status !== "rejected")
+        .map((file) => ({
+          url: `/uploads/${file.value.filename}`,
+        }));
+
+      mutation.mutate({ ...form.values, images: successfulImages });
+    },
+    onError: (error) => {
+      notifications.show({
+        title: "上传图片失败",
+        message: error.message || "未知错误",
+        color: "red",
+        position: "top-center",
+      });
+      setPending(false);
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (recipe: CreateRecipeDto) => {
+      await createRecipe(recipe);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recipes/list"] });
       notifications.show({
         title: "创建食谱成功",
         message: "发布成功！\n即将跳转到食谱页",
@@ -60,17 +89,18 @@ export default function RecipeForm() {
         color: "red",
         position: "top-center",
       });
-      console.error(error);
+      setPending(false);
     },
   });
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmit = () => {
     setPending(true);
-    mutation.mutate(values, { onError: () => setPending(false) });
+    uploadMutation.mutate(files);
   };
 
   return (
     <Container mx="auto" mt="xl">
+      <GalleryPhotoPicker maxCount={5} onChange={setFiles} />
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Flex direction="column" gap="md">
           <TextInput
@@ -154,7 +184,9 @@ export default function RecipeForm() {
         </Box>
 
         <Group mt="xl">
-          <Button type="submit">提交</Button>
+          <Button type="submit" disabled={pending}>
+            提交
+          </Button>
         </Group>
       </form>
     </Container>

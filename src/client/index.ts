@@ -1,16 +1,15 @@
 import { notifications } from "@mantine/notifications";
 
+import { BASE_URL } from "@/consts";
+
 import type {
   CreateRecipeDto,
   LoginDto,
   Recipe,
   RegisterDto,
+  UploadRecipeCoverResponse,
   User,
 } from "./types";
-
-const BASE_URL = import.meta.env.VITE_API_BASE
-  ? import.meta.env.VITE_API_BASE
-  : "http://localhost:3000";
 
 export function logout() {
   localStorage.removeItem("token");
@@ -25,6 +24,10 @@ export function logout() {
 
 export function getUrl(path: string) {
   return new URL(`/v1${path}`, BASE_URL);
+}
+
+export function getImageUrl(image: string) {
+  return new URL(image, BASE_URL);
 }
 
 export async function getUser(id = "me"): Promise<User> {
@@ -102,4 +105,29 @@ export async function getRecipes(): Promise<Recipe[]> {
   }
 
   return await response.json();
+}
+
+export async function uploadRecipeCover(
+  file: File,
+): Promise<UploadRecipeCoverResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(getUrl("/recipes/cover/upload"), {
+    method: "POST",
+    body: formData,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
+}
+
+export async function uploadRecipeCovers(files: File[]) {
+  return Promise.allSettled(files.map(uploadRecipeCover));
 }

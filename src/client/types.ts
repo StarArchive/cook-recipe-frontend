@@ -26,6 +26,7 @@ export interface CreateRecipeDto {
   published: boolean;
   ingredients: { name: string; quantity: string }[];
   steps: { step: number; content: string }[];
+  images: { url: string }[];
 }
 
 export interface Recipe {
@@ -36,4 +37,16 @@ export interface Recipe {
   description: string | null;
   published: boolean;
   authorId: number;
+  images: { url: string }[];
+}
+
+export interface UploadRecipeCoverResponse {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  destination: string;
+  filename: string;
+  path: string;
+  size: number;
 }
