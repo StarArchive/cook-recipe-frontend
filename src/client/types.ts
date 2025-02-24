@@ -29,7 +29,7 @@ export interface CreateRecipeDto {
   images: { url: string }[];
 }
 
-export interface Recipe {
+export interface RecipeListItem {
   id: number;
   createdAt: Date;
   updatedAt: Date;
@@ -37,6 +37,35 @@ export interface Recipe {
   description: string | null;
   published: boolean;
   authorId: number;
+  images: { url: string }[];
+}
+export interface RecipeAuthor {
+  id: number;
+  name: string;
+  roles: Role[];
+}
+
+export interface RecipeIngredient {
+  quantity: string;
+  ingredient: {
+    name: string;
+  };
+}
+
+export interface RecipeStep {
+  step: number;
+  content: string;
+}
+
+export interface Recipe {
+  id: number;
+  title: string;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  author: RecipeAuthor;
+  ingredients: RecipeIngredient[];
+  steps: RecipeStep[];
   images: { url: string }[];
 }
 

@@ -12,11 +12,11 @@ import { useEffect } from "react";
 import { TbFileX } from "react-icons/tb";
 
 import { getRecipes } from "@/client";
-import type { Recipe } from "@/client/types";
+import type { RecipeListItem } from "@/client/types";
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
 
-function RecipeCardList({ recipes }: { recipes?: Recipe[] }) {
+function RecipeCardList({ recipes }: { recipes?: RecipeListItem[] }) {
   if (!recipes || recipes.length === 0) {
     return (
       <Flex justify="center" align="center" direction="column" mt={120}>
@@ -39,6 +39,7 @@ function RecipeCardList({ recipes }: { recipes?: Recipe[] }) {
         {recipes.map((recipe, index) => (
           <RecipeCard
             key={index}
+            id={recipe.id}
             title={recipe.title}
             image={recipe.images[0]?.url}
             description={recipe.description || ""}

@@ -9,7 +9,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 import { register } from "@/client";
 
@@ -35,7 +35,7 @@ const REGISTER_FORM_CONFIG = {
 
 export default function RegisterForm() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const form = useForm(REGISTER_FORM_CONFIG);
   const [pending, setPending] = useState(false);
 

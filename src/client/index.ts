@@ -1,15 +1,15 @@
 import { notifications } from "@mantine/notifications";
 
-import { BASE_URL } from "@/consts";
-
 import type {
   CreateRecipeDto,
   LoginDto,
   Recipe,
+  RecipeListItem,
   RegisterDto,
   UploadRecipeCoverResponse,
   User,
-} from "./types";
+} from "@/client/types";
+import { BASE_URL } from "@/consts";
 
 export function logout() {
   localStorage.removeItem("token");
@@ -93,12 +93,22 @@ export async function createRecipe(createRecipeDto: CreateRecipeDto) {
   return await response.json();
 }
 
-export async function getRecipes(): Promise<Recipe[]> {
+export async function getRecipes(): Promise<RecipeListItem[]> {
   const response = await fetch(getUrl("/recipes"), {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
+}
+
+export async function getRecipe(id: string): Promise<Recipe> {
+  const response = await fetch(getUrl(`/recipes/${id}`));
 
   if (!response.ok) {
     throw new Error(response.statusText);

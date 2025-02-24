@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 import { login } from "@/client";
 
@@ -26,7 +26,7 @@ const LOGIN_FORM_CONFIG = {
 
 export default function LoginForm({ className }: Props) {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const form = useForm(LOGIN_FORM_CONFIG);
   const [pending, setPending] = useState(false);
 

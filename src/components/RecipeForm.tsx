@@ -14,7 +14,7 @@ import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { TbPlus, TbX } from "react-icons/tb";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 import { createRecipe, uploadRecipeCovers } from "@/client";
 import { CreateRecipeDto } from "@/client/types";
@@ -23,7 +23,7 @@ import GalleryPhotoPicker from "./GalleryPhotoPicker";
 
 export default function RecipeForm() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const [files, setFiles] = useState<File[]>([]);
   const form = useForm<CreateRecipeDto>({
     initialValues: {
@@ -48,13 +48,16 @@ export default function RecipeForm() {
   const uploadMutation = useMutation({
     mutationFn: uploadRecipeCovers,
     onSuccess: (data) => {
-      const successfulImages = data
+      const images = data
         .filter((response) => response.status !== "rejected")
         .map((file) => ({
           url: `/uploads/${file.value.filename}`,
         }));
 
-      mutation.mutate({ ...form.values, images: successfulImages });
+      mutation.mutate({
+        ...form.getTransformedValues(),
+        images,
+      });
     },
     onError: (error) => {
       notifications.show({

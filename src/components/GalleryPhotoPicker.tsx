@@ -76,12 +76,12 @@ export default function GalleryPhotoPicker({
             <FileButton
               resetRef={resetRef}
               onChange={handleFileChange}
-              accept="image/png,image/jpeg,image/webp"
+              accept="image/png,image/jpeg"
               multiple
             >
               {(props) => (
                 <UnstyledButton
-                  className="flex justify-center items-center w-24 h-24 border-2 border-dashed rounded-md"
+                  className="flex justify-center items-center w-24 h-24 border-2 border-dashed rounded-md border-gray-900/20 text-gray-900/20"
                   {...props}
                 >
                   <TbPlus size={48} />

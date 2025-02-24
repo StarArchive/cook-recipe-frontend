@@ -1,15 +1,16 @@
 import { Badge, Button, Card, Group, Image, Text } from "@mantine/core";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 
 import { getImageUrl } from "@/client";
 
 interface Props {
+  id: number;
   title: string;
   image?: string;
   description: string;
 }
 
-export default function RecipeCard({ title, image, description }: Props) {
+export default function RecipeCard({ id, title, image, description }: Props) {
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder>
       <Card.Section>
@@ -28,18 +29,19 @@ export default function RecipeCard({ title, image, description }: Props) {
         </Badge>
       </Group>
 
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="dimmed" className="mb-4">
         {description}
       </Text>
 
       <Button
+        className="mt-auto!"
         variant="light"
         color="blue"
         fullWidth
         mt="md"
         radius="md"
         component={Link}
-        to="/recipe/1"
+        to={`/recipe/${id}`}
       >
         查看食谱
       </Button>

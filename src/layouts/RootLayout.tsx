@@ -7,7 +7,7 @@ import {
   useComputedColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 
 import UserActions from "@/components/UserActions";
 
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: Props) {
           </Group>
         </Group>
       </AppShell.Header>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main className="pb-20">{children}</AppShell.Main>
     </AppShell>
   );
 }
