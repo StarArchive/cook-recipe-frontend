@@ -22,7 +22,11 @@ export default function RootLayout({ children }: Props) {
   return (
     <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
+        <Group
+          className="px-6 md:px-8 xl:px-12"
+          h="100%"
+          justify="space-between"
+        >
           <Group>
             <Burger
               opened={opened}

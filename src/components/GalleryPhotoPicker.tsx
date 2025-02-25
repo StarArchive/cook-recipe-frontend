@@ -81,7 +81,7 @@ export default function GalleryPhotoPicker({
             >
               {(props) => (
                 <UnstyledButton
-                  className="flex justify-center items-center w-24 h-24 border-2 border-dashed rounded-md border-gray-900/20 text-gray-900/20"
+                  className="flex h-24 w-24 items-center justify-center rounded-md border-2 border-dashed border-gray-900/20 text-gray-900/20"
                   {...props}
                 >
                   <TbPlus size={48} />

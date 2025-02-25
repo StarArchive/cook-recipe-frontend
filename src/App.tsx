@@ -3,7 +3,6 @@ import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 
-import RootLayout from "@/layouts/RootLayout";
 import ErrorPage from "@/routes/ErrorPage";
 import Login from "@/routes/Login";
 import Recipe from "@/routes/Recipe";
@@ -23,11 +22,7 @@ export default function App() {
           <Route path="/register" component={Register} />
           <Route path="/recipe/new" component={Upload} />
           <Route path="/recipe/:id">
-            {(params) => (
-              <RootLayout>
-                <Recipe id={params.id} />
-              </RootLayout>
-            )}
+            {(params) => <Recipe id={params.id} />}
           </Route>
           <Route>
             <ErrorPage />

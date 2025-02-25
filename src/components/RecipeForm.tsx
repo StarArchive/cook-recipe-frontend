@@ -173,8 +173,8 @@ export default function RecipeForm() {
           </Group>
           {form.values.steps.map((_, index) => (
             <Group key={index} mt="sm">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-semibold">{index + 1}</span>
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-500">
+                <span className="font-semibold text-white">{index + 1}</span>
               </div>
               <Textarea
                 className="w-1/2"
