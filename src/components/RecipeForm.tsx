@@ -115,6 +115,8 @@ export default function RecipeForm() {
           <Textarea
             label="描述"
             placeholder="输入描述"
+            autosize
+            minRows={2}
             {...form.getInputProps("description")}
           />
           <Checkbox
@@ -171,9 +173,15 @@ export default function RecipeForm() {
           </Group>
           {form.values.steps.map((_, index) => (
             <Group key={index} mt="sm">
-              <TextInput
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-semibold">{index + 1}</span>
+              </div>
+              <Textarea
+                className="w-1/2"
                 placeholder={`步骤 ${index + 1}`}
                 required
+                autosize
+                minRows={2}
                 {...form.getInputProps(`steps.${index}.content`)}
               />
               <ActionIcon

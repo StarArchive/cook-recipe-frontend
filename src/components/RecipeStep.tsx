@@ -8,7 +8,7 @@ interface Props {
 
 export default function RecipeStep({ steps }: Props) {
   return (
-    <Stack gap="lg">
+    <Stack gap="md">
       {steps.map((step, index) => (
         <Group key={`step-${index}`} align="center" wrap="nowrap">
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
