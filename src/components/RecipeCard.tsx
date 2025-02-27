@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Group, Image, Text } from "@mantine/core";
+import { Button, Card, Group, Image, Text } from "@mantine/core";
 import { Link } from "wouter";
 
 import { getImageUrl } from "@/client";
@@ -16,7 +16,7 @@ export default function RecipeCard({ id, title, image, description }: Props) {
       <Card.Section>
         <Image
           src={image && getImageUrl(image)}
-          height={160}
+          h={160}
           alt={title}
           fallbackSrc="https://placehold.co/600x400?text=Placeholder"
         />
@@ -24,12 +24,12 @@ export default function RecipeCard({ id, title, image, description }: Props) {
 
       <Group mt="md" mb="xs">
         <Text fw={500}>{title}</Text>
-        <Badge color="pink" variant="light">
+        {/* <Badge color="pink" variant="light">
           NEW
-        </Badge>
+        </Badge> */}
       </Group>
 
-      <Text size="sm" c="dimmed" className="mb-4">
+      <Text className="mb-4 line-clamp-2" size="sm" c="dimmed">
         {description}
       </Text>
 

@@ -41,7 +41,7 @@ function RecipeCardList({ recipes }: { recipes?: RecipeListItem[] }) {
             key={index}
             id={recipe.id}
             title={recipe.title}
-            image={recipe.images[0]?.url}
+            image={recipe.images[0]}
             description={recipe.description || ""}
           />
         ))}

@@ -25,8 +25,8 @@ export interface CreateRecipeDto {
   description: string;
   published: boolean;
   ingredients: { name: string; quantity: string }[];
-  steps: { step: number; content: string }[];
-  images: { url: string }[];
+  steps: RecipeStep[];
+  images: string[];
 }
 
 export interface RecipeListItem {
@@ -37,7 +37,7 @@ export interface RecipeListItem {
   description: string | null;
   published: boolean;
   authorId: number;
-  images: { url: string }[];
+  images: string[];
 }
 export interface RecipeAuthor {
   id: number;
@@ -53,8 +53,9 @@ export interface RecipeIngredient {
 }
 
 export interface RecipeStep {
-  step: number;
+  order: number;
   content: string;
+  images: string[];
 }
 
 export interface Recipe {
@@ -66,7 +67,7 @@ export interface Recipe {
   author: RecipeAuthor;
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
-  images: { url: string }[];
+  images: string[];
 }
 
 export interface UploadRecipeCoverResponse {

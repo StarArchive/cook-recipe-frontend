@@ -38,59 +38,57 @@ export default function GalleryPhotoPicker({
 
   return (
     <>
-      <div className="mb-4">
-        <Flex gap="md" wrap="wrap">
-          {files.map((file, index) => {
-            const imageUrl = URL.createObjectURL(file);
-            return (
-              <div
-                key={index}
-                style={{
-                  position: "relative",
+      <Flex gap="md" wrap="wrap">
+        {files.map((file, index) => {
+          const imageUrl = URL.createObjectURL(file);
+          return (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+              }}
+            >
+              <Image
+                className="cursor-pointer"
+                src={imageUrl}
+                w={96}
+                h={96}
+                fit="contain"
+                onClick={() => setPreviewUrl(imageUrl)}
+              />
+              <ActionIcon
+                className="absolute top-1 right-0"
+                size={24}
+                variant="default"
+                onClick={() => {
+                  const newFiles = files.filter((_, i) => i !== index);
+                  setFiles(newFiles);
+                  onChange?.(newFiles);
                 }}
               >
-                <Image
-                  className="cursor-pointer"
-                  src={imageUrl}
-                  w={96}
-                  h={96}
-                  fit="contain"
-                  onClick={() => setPreviewUrl(imageUrl)}
-                />
-                <ActionIcon
-                  className="absolute top-1 right-0"
-                  size={24}
-                  variant="default"
-                  onClick={() => {
-                    const newFiles = files.filter((_, i) => i !== index);
-                    setFiles(newFiles);
-                    onChange?.(newFiles);
-                  }}
-                >
-                  <TbX size={24} />
-                </ActionIcon>
-              </div>
-            );
-          })}
-          {files.length < maxCount && (
-            <FileButton
-              resetRef={resetRef}
-              onChange={handleFileChange}
-              accept="image/png,image/jpeg"
-              multiple
-            >
-              {(props) => (
-                <UnstyledButton
-                  className="flex h-24 w-24 items-center justify-center rounded-md border-2 border-dashed border-gray-900/20 text-gray-900/20"
-                  {...props}
-                >
-                  <TbPlus size={48} />
-                </UnstyledButton>
-              )}
-            </FileButton>
-          )}
-        </Flex>
-      </div>
+                <TbX size={24} />
+              </ActionIcon>
+            </div>
+          );
+        })}
+        {files.length < maxCount && (
+          <FileButton
+            resetRef={resetRef}
+            onChange={handleFileChange}
+            accept="image/png,image/jpeg"
+            multiple
+          >
+            {(props) => (
+              <UnstyledButton
+                className="flex h-24 w-24 items-center justify-center rounded-md border-2 border-dashed border-gray-900/20 text-gray-900/20"
+                {...props}
+              >
+                <TbPlus size={48} />
+              </UnstyledButton>
+            )}
+          </FileButton>
+        )}
+      </Flex>
 
       <Modal
         opened={!!previewUrl}

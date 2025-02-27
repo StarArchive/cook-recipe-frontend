@@ -2,7 +2,7 @@ import { Button, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useTransition } from "react";
 import { useLocation } from "wouter";
 
 import { login } from "@/client";
@@ -28,7 +28,7 @@ export default function LoginForm({ className }: Props) {
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const form = useForm(LOGIN_FORM_CONFIG);
-  const [pending, setPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const mutation = useMutation({
     mutationFn: login,
@@ -57,8 +57,9 @@ export default function LoginForm({ className }: Props) {
   });
 
   async function handleSubmit(values: typeof form.values) {
-    setPending(true);
-    mutation.mutate(values, { onError: () => setPending(false) });
+    startTransition(async () => {
+      await mutation.mutateAsync(values);
+    });
   }
 
   return (
@@ -79,7 +80,7 @@ export default function LoginForm({ className }: Props) {
       />
 
       <Group justify="flex-end" mt="md">
-        <Button disabled={pending} fullWidth type="submit">
+        <Button disabled={isPending} fullWidth type="submit">
           提交
         </Button>
       </Group>

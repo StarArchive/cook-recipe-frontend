@@ -12,53 +12,44 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { TbPlus, TbX } from "react-icons/tb";
 import { useLocation } from "wouter";
 
 import { createRecipe, uploadRecipeCovers } from "@/client";
-import { CreateRecipeDto } from "@/client/types";
+import type { CreateRecipeDto } from "@/client/types";
 
 import GalleryPhotoPicker from "./GalleryPhotoPicker";
+
+const RECIPE_FORM_CONFIG = {
+  initialValues: {
+    title: "",
+    description: "",
+    published: false,
+    ingredients: [],
+    steps: [],
+    images: [],
+  },
+
+  transformValues: (values: CreateRecipeDto) => ({
+    ...values,
+    steps: values.steps.map((step, idx) => ({
+      order: idx,
+      content: step.content,
+    })),
+  }),
+};
 
 export default function RecipeForm() {
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const [files, setFiles] = useState<File[]>([]);
-  const form = useForm<CreateRecipeDto>({
-    initialValues: {
-      title: "",
-      description: "",
-      published: false,
-      ingredients: [],
-      steps: [],
-      images: [],
-    },
+  const [stepFiles, setStepFiles] = useState<File[]>([]);
+  const [isPending, startTransition] = useTransition();
 
-    transformValues: (values) => ({
-      ...values,
-      steps: values.steps.map((step, idx) => ({
-        step: idx,
-        content: step.content,
-      })),
-    }),
-  });
-  const [pending, setPending] = useState(false);
-
+  const form = useForm<CreateRecipeDto>(RECIPE_FORM_CONFIG);
   const uploadMutation = useMutation({
     mutationFn: uploadRecipeCovers,
-    onSuccess: (data) => {
-      const images = data
-        .filter((response) => response.status !== "rejected")
-        .map((file) => ({
-          url: `/uploads/${file.value.filename}`,
-        }));
-
-      mutation.mutate({
-        ...form.getTransformedValues(),
-        images,
-      });
-    },
     onError: (error) => {
       notifications.show({
         title: "上传图片失败",
@@ -66,9 +57,15 @@ export default function RecipeForm() {
         color: "red",
         position: "top-center",
       });
-      setPending(false);
     },
   });
+
+  const uploadImages = async (files: File[]) => {
+    const responses = await uploadMutation.mutateAsync(files);
+    return responses
+      .filter((response) => response.status !== "rejected")
+      .map((file) => `/uploads/${file.value.filename}`);
+  };
 
   const mutation = useMutation({
     mutationFn: async (recipe: CreateRecipeDto) => {
@@ -92,18 +89,33 @@ export default function RecipeForm() {
         color: "red",
         position: "top-center",
       });
-      setPending(false);
     },
   });
 
   const handleSubmit = () => {
-    setPending(true);
-    uploadMutation.mutate(files);
+    startTransition(async () => {
+      const uploadedStepsImages = await uploadImages(stepFiles);
+      const values = form.getTransformedValues();
+      const steps = values.steps.map((step, idx) => ({
+        ...step,
+        images: uploadedStepsImages[idx] ? [uploadedStepsImages[idx]] : [],
+      }));
+
+      const uploadedCovers = await uploadImages(files);
+
+      mutation.mutate({
+        ...values,
+        images: uploadedCovers,
+        steps,
+      });
+    });
   };
 
   return (
     <Container mx="auto" mt="xl">
-      <GalleryPhotoPicker maxCount={5} onChange={setFiles} />
+      <div className="mb-4">
+        <GalleryPhotoPicker maxCount={5} onChange={setFiles} />
+      </div>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Flex direction="column" gap="md">
           <TextInput
@@ -147,7 +159,6 @@ export default function RecipeForm() {
               />
               <TextInput
                 placeholder="用量"
-                required
                 {...form.getInputProps(`ingredients.${index}.quantity`)}
               />
               <ActionIcon
@@ -172,7 +183,7 @@ export default function RecipeForm() {
             </Button>
           </Group>
           {form.values.steps.map((_, index) => (
-            <Group key={index} mt="sm">
+            <Group key={index} mt="sm" align="center">
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-500">
                 <span className="font-semibold text-white">{index + 1}</span>
               </div>
@@ -181,9 +192,10 @@ export default function RecipeForm() {
                 placeholder={`步骤 ${index + 1}`}
                 required
                 autosize
-                minRows={2}
+                minRows={3}
                 {...form.getInputProps(`steps.${index}.content`)}
               />
+              <GalleryPhotoPicker maxCount={1} onChange={setStepFiles} />
               <ActionIcon
                 color="red"
                 onClick={() => form.removeListItem("steps", index)}
@@ -195,7 +207,7 @@ export default function RecipeForm() {
         </Box>
 
         <Group mt="xl">
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" disabled={isPending}>
             提交
           </Button>
         </Group>

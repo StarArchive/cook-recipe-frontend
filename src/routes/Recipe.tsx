@@ -18,25 +18,42 @@ export default function Recipe({ id }: Props) {
     retry: false,
   });
 
-  if (!isFetched) return <Container>Loading...</Container>;
-  if (error) return <Container>出错了：{error.message}</Container>;
-  if (!data) return <Container>结果为空</Container>;
+  if (!isFetched)
+    return (
+      <RootLayout>
+        <Container>Loading...</Container>
+      </RootLayout>
+    );
+
+  if (error)
+    return (
+      <RootLayout>
+        <Container>出错了：{error.message}</Container>
+      </RootLayout>
+    );
+
+  if (!data)
+    return (
+      <RootLayout>
+        <Container>结果为空</Container>
+      </RootLayout>
+    );
 
   return (
     <RootLayout>
       <Container>
         <Stack gap="xl">
-          <Stack gap="sm">
+          <Stack gap="lg">
             <Title order={1}>{data.title}</Title>
             <ImagesCarousel images={data.images} title={data.title} />
           </Stack>
 
-          <Stack gap="sm">
+          <Stack gap="lg">
             <Title order={2}>用料</Title>
             <IngredientsTable ingredients={data.ingredients} />
           </Stack>
 
-          <Stack gap="md">
+          <Stack gap="lg">
             <Title order={2}>{data.title}的做法</Title>
             <RecipeStep steps={data.steps} />
           </Stack>

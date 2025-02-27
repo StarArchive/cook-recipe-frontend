@@ -8,7 +8,7 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useTransition } from "react";
 import { useLocation } from "wouter";
 
 import { register } from "@/client";
@@ -37,7 +37,7 @@ export default function RegisterForm() {
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const form = useForm(REGISTER_FORM_CONFIG);
-  const [pending, setPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const mutation = useMutation({
     mutationFn: register,
@@ -66,8 +66,9 @@ export default function RegisterForm() {
   });
 
   async function handleSubmit(values: typeof form.values) {
-    setPending(true);
-    mutation.mutate(values, { onError: () => setPending(false) });
+    startTransition(async () => {
+      await mutation.mutateAsync(values);
+    });
   }
 
   return (
@@ -110,7 +111,7 @@ export default function RegisterForm() {
       />
 
       <Group justify="flex-end" mt="md">
-        <Button disabled={pending} fullWidth type="submit">
+        <Button disabled={isPending} fullWidth type="submit">
           提交
         </Button>
       </Group>
