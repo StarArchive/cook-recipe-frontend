@@ -1,9 +1,9 @@
 import { Flex, Paper, Title } from "@mantine/core";
-import { JSX, ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface Props {
   title: string;
-  children?: JSX.Element | ReactNode;
+  children?: ReactNode;
 }
 
 export default function AccountFormLayout({ title, children }: Props) {
