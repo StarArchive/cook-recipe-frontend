@@ -31,7 +31,9 @@ export default function ImagesCarousel({ images, title }: Props) {
           size="xl"
           padding="xs"
         >
-          {previewUrl && <Image src={previewUrl} fit="contain" maw="100%" />}
+          {previewUrl && (
+            <Image src={previewUrl} fit="contain" maw="100%" mah="80vh" />
+          )}
         </Modal>
       </>
     );
@@ -59,7 +61,9 @@ export default function ImagesCarousel({ images, title }: Props) {
         size="xl"
         padding="xs"
       >
-        {previewUrl && <Image src={previewUrl} fit="contain" maw="100%" />}
+        {previewUrl && (
+          <Image src={previewUrl} fit="contain" maw="100%" mah="80vh" />
+        )}
       </Modal>
     </>
   );

@@ -96,7 +96,9 @@ export default function GalleryPhotoPicker({
         size="xl"
         padding="xs"
       >
-        {previewUrl && <Image src={previewUrl} fit="contain" maw="100%" />}
+        {previewUrl && (
+          <Image src={previewUrl} fit="contain" maw="100%" mah="80vh" />
+        )}
       </Modal>
     </>
   );
