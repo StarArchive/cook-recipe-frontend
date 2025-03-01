@@ -21,7 +21,8 @@ export default function ImagesCarousel({ images, title }: Props) {
           src={imageUrl}
           alt={title}
           radius="md"
-          w={660}
+          w="100%"
+          maw={660}
           h={420}
           onClick={() => setPreviewUrl(imageUrl)}
         />
