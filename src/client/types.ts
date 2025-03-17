@@ -47,9 +47,7 @@ export interface RecipeAuthor {
 
 export interface RecipeIngredient {
   quantity: string;
-  ingredient: {
-    name: string;
-  };
+  name: string;
 }
 
 export interface RecipeStep {

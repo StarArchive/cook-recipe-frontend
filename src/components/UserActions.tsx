@@ -1,34 +1,30 @@
 import { Button, HoverCard, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TbLogout, TbUpload } from "react-icons/tb";
+import useSWR from "swr";
 import { Link } from "wouter";
 
 import { getUser, logout } from "@/client";
 
 export default function UserActions() {
-  const { data, isFetched, error } = useQuery({
-    queryKey: ["users/me"],
-    queryFn: async () => await getUser(),
-    retry: false,
+  const { data, isLoading } = useSWR("/users/me", () => getUser(), {
+    shouldRetryOnError: false,
+    onError: (error) => {
+      if (error?.message == "Unauthorized") {
+        localStorage.removeItem("token");
+        notifications.show({
+          title: "登录失效",
+          message: "请重新登录",
+          color: "red",
+          position: "top-center",
+        });
+      }
+    },
   });
-
   const [isClicked, setIsClicked] = useState(false);
 
-  useEffect(() => {
-    if (error?.message == "Unauthorized" && localStorage.getItem("token")) {
-      localStorage.removeItem("token");
-      notifications.show({
-        title: "登录失效",
-        message: "请重新登录",
-        color: "red",
-        position: "top-center",
-      });
-    }
-  }, [error?.message]);
-
-  if (!isFetched) return null;
+  if (isLoading) return null;
   if (data?.name)
     return (
       <>

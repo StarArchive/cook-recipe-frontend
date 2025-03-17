@@ -11,9 +11,9 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { TbPlus, TbX } from "react-icons/tb";
+import useSWRMutation from "swr/mutation";
 import { useLocation } from "wouter";
 
 import { createRecipe, uploadRecipeCovers } from "@/client";
@@ -36,78 +36,78 @@ const RECIPE_FORM_CONFIG = {
     steps: values.steps.map((step, idx) => ({
       order: idx,
       content: step.content,
+      images: step.images,
     })),
   }),
 };
 
 export default function RecipeForm() {
-  const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const [files, setFiles] = useState<File[]>([]);
   const [stepFiles, setStepFiles] = useState<File[]>([]);
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<CreateRecipeDto>(RECIPE_FORM_CONFIG);
-  const uploadMutation = useMutation({
-    mutationFn: uploadRecipeCovers,
-    onError: (error) => {
-      notifications.show({
-        title: "上传图片失败",
-        message: error.message || "未知错误",
-        color: "red",
-        position: "top-center",
-      });
+  const uploadMutation = useSWRMutation(
+    "/upload",
+    (_url, { arg }: { arg: File[] }) => uploadRecipeCovers(arg),
+    {
+      onError: (error) => {
+        notifications.show({
+          title: "上传图片失败",
+          message: error.message || "未知错误",
+          color: "red",
+          position: "top-center",
+        });
+      },
     },
-  });
+  );
 
   const uploadImages = async (files: File[]) => {
-    const responses = await uploadMutation.mutateAsync(files);
+    const responses = await uploadMutation.trigger(files);
     return responses
       .filter((response) => response.status !== "rejected")
       .map((file) => `/uploads/${file.value.filename}`);
   };
 
-  const mutation = useMutation({
-    mutationFn: async (recipe: CreateRecipeDto) => {
-      await createRecipe(recipe);
+  const mutation = useSWRMutation(
+    "/recipes/new",
+    (_url, { arg }: { arg: CreateRecipeDto }) => createRecipe(arg),
+    {
+      onSuccess: () => {
+        notifications.show({
+          title: "创建食谱成功",
+          message: "发布成功！\n即将跳转到食谱页",
+          color: "green",
+          position: "top-center",
+          autoClose: 1500,
+        });
+        navigate("/");
+      },
+      onError: (error) => {
+        notifications.show({
+          title: "创建食谱失败",
+          message: error.message || "未知错误",
+          color: "red",
+          position: "top-center",
+        });
+      },
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipes/list"] });
-      notifications.show({
-        title: "创建食谱成功",
-        message: "发布成功！\n即将跳转到食谱页",
-        color: "green",
-        position: "top-center",
-        autoClose: 1500,
-      });
-      navigate("/");
-    },
-    onError: (error) => {
-      notifications.show({
-        title: "创建食谱失败",
-        message: error.message || "未知错误",
-        color: "red",
-        position: "top-center",
-      });
-    },
-  });
+  );
 
-  const handleSubmit = () => {
-    startTransition(async () => {
-      const uploadedStepsImages = await uploadImages(stepFiles);
-      const values = form.getTransformedValues();
-      const steps = values.steps.map((step, idx) => ({
-        ...step,
-        images: uploadedStepsImages[idx] ? [uploadedStepsImages[idx]] : [],
-      }));
+  const handleSubmit = async () => {
+    const uploadedStepsImages = await uploadImages(stepFiles);
+    const values = form.getTransformedValues();
+    const steps = values.steps.map((step, idx) => ({
+      ...step,
+      images: uploadedStepsImages[idx] ? [uploadedStepsImages[idx]] : [],
+    }));
+    
+    const uploadedCovers = await uploadImages(files);
 
-      const uploadedCovers = await uploadImages(files);
-
-      mutation.mutate({
-        ...values,
-        images: uploadedCovers,
-        steps,
-      });
+    mutation.trigger({
+      ...values,
+      images: uploadedCovers,
+      steps,
     });
   };
 
@@ -207,7 +207,7 @@ export default function RecipeForm() {
         </Box>
 
         <Group mt="xl">
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={mutation.isMutating}>
             提交
           </Button>
         </Group>

@@ -7,8 +7,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTransition } from "react";
+import useSWRMutation from "swr/mutation";
 import { useLocation } from "wouter";
 
 import { register } from "@/client";
@@ -34,45 +33,38 @@ const REGISTER_FORM_CONFIG = {
 } as const;
 
 export default function RegisterForm() {
-  const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const form = useForm(REGISTER_FORM_CONFIG);
-  const [isPending, startTransition] = useTransition();
 
-  const mutation = useMutation({
-    mutationFn: register,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.accessToken);
-      queryClient.invalidateQueries({ queryKey: ["users/me"] });
-
-      notifications.show({
-        title: "注册成功",
-        message: "欢迎回来！\n即将跳转到首页",
-        color: "green",
-        position: "top-center",
-        autoClose: 1500,
-      });
-      navigate("/");
+  const { trigger, isMutating } = useSWRMutation(
+    "/auth/register",
+    (_url, { arg }: { arg: typeof form.values }) => register(arg),
+    {
+      onSuccess: (data) => {
+        localStorage.setItem("token", data.accessToken);
+        notifications.show({
+          title: "注册成功",
+          message: "欢迎回来！\n即将跳转到首页",
+          color: "green",
+          position: "top-center",
+          autoClose: 1500,
+        });
+        navigate("/");
+      },
+      onError: (error) => {
+        notifications.show({
+          title: "注册失败",
+          message: error.message || "未知错误",
+          color: "red",
+          position: "top-center",
+        });
+        console.error(error);
+      },
     },
-    onError: (error) => {
-      notifications.show({
-        title: "注册失败",
-        message: error.message || "未知错误",
-        color: "red",
-        position: "top-center",
-      });
-      console.error(error);
-    },
-  });
-
-  async function handleSubmit(values: typeof form.values) {
-    startTransition(async () => {
-      await mutation.mutateAsync(values);
-    });
-  }
+  );
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit((values) => trigger(values))}>
       <TextInput
         withAsterisk
         label="用户名"
@@ -111,7 +103,7 @@ export default function RegisterForm() {
       />
 
       <Group justify="flex-end" mt="md">
-        <Button disabled={isPending} fullWidth type="submit">
+        <Button disabled={isMutating} fullWidth type="submit">
           提交
         </Button>
       </Group>

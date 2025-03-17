@@ -17,7 +17,7 @@ export default function IngredientsTable({ ingredients }: Props) {
               borderBottom: `${rem(1)} solid var(--table-border-color)`,
             }}
           >
-            <Table.Td>{ingredient.ingredient.name}</Table.Td>
+            <Table.Td>{ingredient.name}</Table.Td>
             <Table.Td>{ingredient.quantity}</Table.Td>
           </Table.Tr>
         ))}

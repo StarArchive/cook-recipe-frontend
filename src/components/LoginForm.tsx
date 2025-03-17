@@ -1,8 +1,7 @@
 import { Button, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTransition } from "react";
+import useSWRMutation from "swr/mutation";
 import { useLocation } from "wouter";
 
 import { login } from "@/client";
@@ -25,45 +24,33 @@ const LOGIN_FORM_CONFIG = {
 } as const;
 
 export default function LoginForm({ className }: Props) {
-  const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const form = useForm(LOGIN_FORM_CONFIG);
-  const [isPending, startTransition] = useTransition();
 
-  const mutation = useMutation({
-    mutationFn: login,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.accessToken);
-      queryClient.invalidateQueries({ queryKey: ["users/me"] });
+  const { trigger, isMutating } = useSWRMutation(
+    "/auth/login",
+    (_url, { arg }: { arg: typeof form.values }) => login(arg),
+    {
+      onSuccess: (data) => {
+        localStorage.setItem("token", data.accessToken);
 
-      notifications.show({
-        title: "登录成功",
-        message: "欢迎回来！\n即将跳转到首页",
-        color: "green",
-        position: "top-center",
-        autoClose: 1500,
-      });
-      navigate("/");
+        notifications.show({
+          title: "登录成功",
+          message: "欢迎回来！\n即将跳转到首页",
+          color: "green",
+          position: "top-center",
+          autoClose: 1500,
+        });
+        navigate("/");
+      },
     },
-    onError: (error) => {
-      notifications.show({
-        title: "登录失败",
-        message: error.message || "未知错误",
-        color: "red",
-        position: "top-center",
-      });
-      console.error(error);
-    },
-  });
-
-  async function handleSubmit(values: typeof form.values) {
-    startTransition(async () => {
-      await mutation.mutateAsync(values);
-    });
-  }
+  );
 
   return (
-    <form className={className} onSubmit={form.onSubmit(handleSubmit)}>
+    <form
+      className={className}
+      onSubmit={form.onSubmit((values) => trigger(values))}
+    >
       <TextInput
         withAsterisk
         label="邮箱"
@@ -80,7 +67,7 @@ export default function LoginForm({ className }: Props) {
       />
 
       <Group justify="flex-end" mt="md">
-        <Button disabled={isPending} fullWidth type="submit">
+        <Button disabled={isMutating} fullWidth type="submit">
           提交
         </Button>
       </Group>

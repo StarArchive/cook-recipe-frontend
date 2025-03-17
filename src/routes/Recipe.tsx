@@ -1,5 +1,5 @@
 import { Container, Stack, Title } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
+import useSWR from "swr";
 
 import { getRecipe } from "@/client";
 import ImagesCarousel from "@/components/ImagesCarousel";
@@ -12,13 +12,11 @@ interface Props {
 }
 
 export default function Recipe({ id }: Props) {
-  const { data, error, isFetched } = useQuery({
-    queryKey: ["recipes", id],
-    queryFn: () => getRecipe(id),
-    retry: false,
-  });
+  const { data, error, isLoading } = useSWR(`/recipes/${id}`, () =>
+    getRecipe(id),
+  );
 
-  if (!isFetched)
+  if (isLoading)
     return (
       <RootLayout>
         <Container>Loading...</Container>

@@ -9,7 +9,7 @@ import type {
   UploadRecipeCoverResponse,
   User,
 } from "@/client/types";
-import { BASE_URL } from "@/consts";
+import { API_BASE_URL, IMAGE_BASE_URL } from "@/consts";
 
 export function logout() {
   localStorage.removeItem("token");
@@ -23,98 +23,80 @@ export function logout() {
 }
 
 export function getUrl(path: string) {
-  return new URL(`/v1${path}`, BASE_URL);
+  return new URL(`/v1${path}`, API_BASE_URL);
 }
 
 export function getImageUrl(image: string) {
-  return new URL(image, BASE_URL);
+  return new URL(image, IMAGE_BASE_URL);
+}
+
+export function transformBody(body?: unknown) {
+  if (!body) return {};
+  if (body instanceof FormData) return { body };
+
+  return { body: JSON.stringify(body) };
+}
+
+export function getContentType(
+  method: string,
+  body?: unknown,
+): Record<string, string> {
+  if (method === "POST") {
+    return body instanceof FormData
+      ? {}
+      : { "Content-Type": "application/json" };
+  }
+
+  return {};
+}
+
+export async function fetchWithToken(
+  method: string,
+  path: string,
+  body?: unknown,
+) {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    ...getContentType(method, body),
+  };
+  const response = await fetch(getUrl(path), {
+    method,
+    headers,
+    ...transformBody(body),
+  });
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.message);
+  }
+
+  return json;
 }
 
 export async function getUser(id = "me"): Promise<User> {
-  const response = await fetch(getUrl(`/users/${id}`), {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+  return fetchWithToken("GET", `/users/${id}`);
 }
 
-export async function login(loginDto: LoginDto) {
-  const response = await fetch(getUrl("/auth/login"), {
-    method: "POST",
-    body: JSON.stringify(loginDto),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+export async function login(
+  loginDto: LoginDto,
+): Promise<{ accessToken: string }> {
+  return fetchWithToken("POST", "/auth/login", loginDto);
 }
 
 export async function register(registerDto: RegisterDto) {
-  const response = await fetch(getUrl("/auth/register"), {
-    method: "POST",
-    body: JSON.stringify(registerDto),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+  return fetchWithToken("POST", "/auth/register", registerDto);
 }
 
 export async function createRecipe(createRecipeDto: CreateRecipeDto) {
-  const response = await fetch(getUrl("/recipes"), {
-    method: "POST",
-    body: JSON.stringify(createRecipeDto),
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+  return fetchWithToken("POST", "/recipes", createRecipeDto);
 }
 
 export async function getRecipes(): Promise<RecipeListItem[]> {
-  const response = await fetch(getUrl("/recipes"), {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+  return fetchWithToken("GET", "/recipes");
 }
 
 export async function getRecipe(id: string): Promise<Recipe> {
-  const response = await fetch(getUrl(`/recipes/${id}`));
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+  return fetchWithToken("GET", `/recipes/${id}`);
 }
 
 export async function uploadRecipeCover(
@@ -123,19 +105,7 @@ export async function uploadRecipeCover(
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(getUrl("/recipes/cover/upload"), {
-    method: "POST",
-    body: formData,
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-
-  return await response.json();
+  return fetchWithToken("POST", "/upload", formData);
 }
 
 export async function uploadRecipeCovers(files: File[]) {

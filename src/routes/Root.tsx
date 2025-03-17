@@ -6,10 +6,8 @@ import {
   SimpleGrid,
   Title,
 } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { TbFileX } from "react-icons/tb";
+import useSWR from "swr";
 
 import { getRecipes } from "@/client";
 import type { RecipeListItem } from "@/client/types";
@@ -51,29 +49,11 @@ function RecipeCardList({ recipes }: { recipes?: RecipeListItem[] }) {
 }
 
 export default function Root() {
-  const {
-    data: recipes,
-    error,
-    isFetched,
-  } = useQuery({
-    queryKey: ["recipes/list"],
-    queryFn: getRecipes,
-    retry: false,
-  });
-
-  useEffect(() => {
-    if (error) {
-      notifications.show({
-        title: "拉取食谱失败",
-        message: error.message || "未知错误",
-        color: "red",
-        position: "top-center",
-        autoClose: 1500,
-      });
-    }
-  }, [error]);
+  const { data: recipes, isLoading } = useSWR("/recipes", getRecipes);
 
   return (
-    <RootLayout>{isFetched && <RecipeCardList recipes={recipes} />}</RootLayout>
+    <RootLayout>
+      {!isLoading && <RecipeCardList recipes={recipes} />}
+    </RootLayout>
   );
 }

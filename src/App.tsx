@@ -1,6 +1,6 @@
 import { MantineProvider } from "@mantine/core";
-import { Notifications } from "@mantine/notifications";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Notifications, notifications } from "@mantine/notifications";
+import { SWRConfig, type SWRConfiguration } from "swr";
 import { Route, Switch } from "wouter";
 
 import ErrorPage from "@/routes/ErrorPage";
@@ -10,11 +10,21 @@ import Register from "@/routes/Register";
 import Root from "@/routes/Root";
 import Upload from "@/routes/Upload";
 
-const queryClient = new QueryClient();
+const swrOptions: SWRConfiguration = {
+  onError: (error) => {
+    notifications.show({
+      title: "请求时出错",
+      message: error.message || "未知错误",
+      color: "red",
+      position: "top-center",
+      autoClose: 5000,
+    });
+  },
+};
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <SWRConfig value={swrOptions}>
       <MantineProvider classNamesPrefix="app" defaultColorScheme="auto">
         <Switch>
           <Route path="/" component={Root} />
@@ -30,6 +40,6 @@ export default function App() {
         </Switch>
         <Notifications />
       </MantineProvider>
-    </QueryClientProvider>
+    </SWRConfig>
   );
 }
