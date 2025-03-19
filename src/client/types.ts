@@ -3,10 +3,12 @@ export type Role = "ADMIN" | "USER";
 export interface User {
   id: number;
   name: string;
+  nickname: string | null;
   email: string;
   createdAt: Date;
   updatedAt: Date;
   roles: Role[];
+  profile: UserProfile;
 }
 
 export interface LoginDto {
@@ -68,7 +70,7 @@ export interface Recipe {
   images: string[];
 }
 
-export interface UploadRecipeCoverResponse {
+export interface UploadFileResponse {
   fieldname: string;
   originalname: string;
   encoding: string;
@@ -77,4 +79,9 @@ export interface UploadRecipeCoverResponse {
   filename: string;
   path: string;
   size: number;
+}
+
+export interface UserProfile {
+  bio?: string;
+  avatar?: string;
 }

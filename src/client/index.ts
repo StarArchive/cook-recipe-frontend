@@ -1,4 +1,5 @@
 import { notifications } from "@mantine/notifications";
+import { navigate } from "wouter/use-browser-location";
 
 import type {
   CreateRecipeDto,
@@ -6,8 +7,9 @@ import type {
   Recipe,
   RecipeListItem,
   RegisterDto,
-  UploadRecipeCoverResponse,
+  UploadFileResponse,
   User,
+  UserProfile,
 } from "@/client/types";
 import { API_BASE_URL, IMAGE_BASE_URL } from "@/consts";
 
@@ -19,7 +21,7 @@ export function logout() {
     color: "blue",
     position: "top-center",
   });
-  window.location.reload();
+  navigate("/", { replace: true });
 }
 
 export function getUrl(path: string) {
@@ -41,7 +43,7 @@ export function getContentType(
   method: string,
   body?: unknown,
 ): Record<string, string> {
-  if (method === "POST") {
+  if (method !== "GET") {
     return body instanceof FormData
       ? {}
       : { "Content-Type": "application/json" };
@@ -65,6 +67,16 @@ export async function fetchWithToken(
     ...transformBody(body),
   });
   const json = await response.json();
+
+  if (json?.message == "Unauthorized") {
+    localStorage.removeItem("token");
+    notifications.show({
+      title: "登录失效",
+      message: "请重新登录",
+      color: "red",
+      position: "top-center",
+    });
+  }
 
   if (!response.ok) {
     throw new Error(json.message);
@@ -91,6 +103,13 @@ export async function createRecipe(createRecipeDto: CreateRecipeDto) {
   return fetchWithToken("POST", "/recipes", createRecipeDto);
 }
 
+export async function updateRecipe(
+  id: string,
+  updateRecipeDto: Partial<CreateRecipeDto>,
+) {
+  return fetchWithToken("PATCH", `/recipes/${id}`, updateRecipeDto);
+}
+
 export async function getRecipes(): Promise<RecipeListItem[]> {
   return fetchWithToken("GET", "/recipes");
 }
@@ -99,15 +118,21 @@ export async function getRecipe(id: string): Promise<Recipe> {
   return fetchWithToken("GET", `/recipes/${id}`);
 }
 
-export async function uploadRecipeCover(
-  file: File,
-): Promise<UploadRecipeCoverResponse> {
+export async function uploadFile(file: File): Promise<UploadFileResponse> {
   const formData = new FormData();
   formData.append("file", file);
 
   return fetchWithToken("POST", "/upload", formData);
 }
 
-export async function uploadRecipeCovers(files: File[]) {
-  return Promise.allSettled(files.map(uploadRecipeCover));
+export async function uploadFiles(files: File[]) {
+  return Promise.allSettled(files.map(uploadFile));
+}
+
+export async function getUserProfile(id: string): Promise<UserProfile> {
+  return fetchWithToken("GET", `/users/${id}/profile`);
+}
+
+export async function updateMe(body: Partial<User>) {
+  return fetchWithToken("PATCH", "/users/me", body);
 }
