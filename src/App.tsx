@@ -1,30 +1,21 @@
 import { MantineProvider } from "@mantine/core";
-import { Notifications, notifications } from "@mantine/notifications";
-import { SWRConfig, type SWRConfiguration } from "swr";
+import { Notifications } from "@mantine/notifications";
+import { SWRConfig } from "swr";
 import { Route, Switch } from "wouter";
 
-import ErrorPage from "@/routes/ErrorPage";
 import Login from "@/routes/Login";
+import NotFound from "@/routes/NotFound";
 import Recipe from "@/routes/Recipe";
+import RecipeEdit from "@/routes/RecipeEdit";
 import Register from "@/routes/Register";
 import Root from "@/routes/Root";
 import Upload from "@/routes/Upload";
-
-const swrOptions: SWRConfiguration = {
-  onError: (error) => {
-    notifications.show({
-      title: "请求时出错",
-      message: error.message || "未知错误",
-      color: "red",
-      position: "top-center",
-      autoClose: 5000,
-    });
-  },
-};
+import UserPage from "@/routes/UserPage";
+import UserSettings from "@/routes/UserSettings";
 
 export default function App() {
   return (
-    <SWRConfig value={swrOptions}>
+    <SWRConfig>
       <MantineProvider classNamesPrefix="app" defaultColorScheme="auto">
         <Switch>
           <Route path="/" component={Root} />
@@ -34,8 +25,15 @@ export default function App() {
           <Route path="/recipe/:id">
             {(params) => <Recipe id={params.id} />}
           </Route>
+          <Route path="/recipe/:id/edit">
+            {(params) => <RecipeEdit id={params.id} />}
+          </Route>
+          <Route path="/space/:id">
+            {(params) => <UserPage id={params.id} />}
+          </Route>
+          <Route path="/settings" component={UserSettings} />
           <Route>
-            <ErrorPage />
+            <NotFound />
           </Route>
         </Switch>
         <Notifications />

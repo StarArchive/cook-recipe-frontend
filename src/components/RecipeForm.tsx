@@ -16,16 +16,22 @@ import { TbPlus, TbX } from "react-icons/tb";
 import useSWRMutation from "swr/mutation";
 import { useLocation } from "wouter";
 
-import { createRecipe, uploadRecipeCovers } from "@/client";
+import { createRecipe, getImageUrl, updateRecipe, uploadFiles } from "@/client";
 import type { CreateRecipeDto } from "@/client/types";
 
 import GalleryPhotoPicker from "./GalleryPhotoPicker";
+
+interface Props {
+  values?: CreateRecipeDto;
+  isEdit?: boolean;
+  recipeId?: string;
+}
 
 const RECIPE_FORM_CONFIG = {
   initialValues: {
     title: "",
     description: "",
-    published: false,
+    published: true,
     ingredients: [],
     steps: [],
     images: [],
@@ -41,15 +47,22 @@ const RECIPE_FORM_CONFIG = {
   }),
 };
 
-export default function RecipeForm() {
+export default function RecipeForm({ values, isEdit, recipeId }: Props) {
   const [, navigate] = useLocation();
   const [files, setFiles] = useState<File[]>([]);
+  const [initialImages, setInitialImages] = useState<string[]>(
+    values?.images || [],
+  );
   const [stepFiles, setStepFiles] = useState<File[]>([]);
 
-  const form = useForm<CreateRecipeDto>(RECIPE_FORM_CONFIG);
+  const form = useForm<CreateRecipeDto>({
+    ...RECIPE_FORM_CONFIG,
+    ...(values && { initialValues: values }),
+  });
+
   const uploadMutation = useSWRMutation(
     "/upload",
-    (_url, { arg }: { arg: File[] }) => uploadRecipeCovers(arg),
+    (_url, { arg }: { arg: File[] }) => uploadFiles(arg),
     {
       onError: (error) => {
         notifications.show({
@@ -70,22 +83,25 @@ export default function RecipeForm() {
   };
 
   const mutation = useSWRMutation(
-    "/recipes/new",
-    (_url, { arg }: { arg: CreateRecipeDto }) => createRecipe(arg),
+    isEdit ? `/recipes/${recipeId}` : "/recipes/new",
+    (_url, { arg }: { arg: CreateRecipeDto }) =>
+      isEdit ? updateRecipe(recipeId!, arg) : createRecipe(arg),
     {
       onSuccess: () => {
         notifications.show({
-          title: "创建食谱成功",
-          message: "发布成功！\n即将跳转到食谱页",
+          title: isEdit ? "更新食谱成功" : "创建食谱成功",
+          message: isEdit
+            ? "更新成功！\n即将返回食谱页"
+            : "发布成功！\n即将跳转到食谱页",
           color: "green",
           position: "top-center",
           autoClose: 1500,
         });
-        navigate("/");
+        navigate(isEdit ? `/recipe/${recipeId}` : "/");
       },
       onError: (error) => {
         notifications.show({
-          title: "创建食谱失败",
+          title: isEdit ? "更新食谱失败" : "创建食谱失败",
           message: error.message || "未知错误",
           color: "red",
           position: "top-center",
@@ -101,12 +117,12 @@ export default function RecipeForm() {
       ...step,
       images: uploadedStepsImages[idx] ? [uploadedStepsImages[idx]] : [],
     }));
-    
+
     const uploadedCovers = await uploadImages(files);
 
     mutation.trigger({
       ...values,
-      images: uploadedCovers,
+      images: [...initialImages, ...uploadedCovers],
       steps,
     });
   };
@@ -114,7 +130,14 @@ export default function RecipeForm() {
   return (
     <Container mx="auto" mt="xl">
       <div className="mb-4">
-        <GalleryPhotoPicker maxCount={5} onChange={setFiles} />
+        <GalleryPhotoPicker
+          maxCount={5}
+          onChange={setFiles}
+          initialImages={initialImages.map((image) =>
+            getImageUrl(image).toString(),
+          )}
+          onInitialImagesChange={(images) => setInitialImages(images)}
+        />
       </div>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Flex direction="column" gap="md">
@@ -195,7 +218,16 @@ export default function RecipeForm() {
                 minRows={3}
                 {...form.getInputProps(`steps.${index}.content`)}
               />
-              <GalleryPhotoPicker maxCount={1} onChange={setStepFiles} />
+              <GalleryPhotoPicker
+                maxCount={1}
+                onChange={setStepFiles}
+                initialImages={values?.steps[index].images.map((image) =>
+                  getImageUrl(image).toString(),
+                )}
+                onInitialImagesChange={() => {
+                  form.setFieldValue(`steps.${index}.images`, []);
+                }}
+              />
               <ActionIcon
                 color="red"
                 onClick={() => form.removeListItem("steps", index)}

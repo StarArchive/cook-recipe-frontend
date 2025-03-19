@@ -1,5 +1,4 @@
 import js from "@eslint/js";
-import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginImport from "eslint-plugin-import-x";
 import configPrettierRecommended from "eslint-plugin-prettier/recommended";
 import react from "eslint-plugin-react";
@@ -36,10 +35,7 @@ export const imports = {
           "object",
           "type",
         ],
-        pathGroups: [
-          { group: "builtin", pattern: "vue", position: "before" },
-          { group: "internal", pattern: "{{@,~}/,#}**" },
-        ],
+        pathGroups: [{ group: "internal", pattern: "@/**" }],
         pathGroupsExcludedImportTypes: [],
         "newlines-between": "always",
         alphabetize: {
@@ -87,5 +83,4 @@ export default tseslint.config(
   },
   imports,
   ...prettier,
-  ...pluginQuery.configs["flat/recommended"],
 );

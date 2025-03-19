@@ -1,33 +1,32 @@
-import {
-  ActionIcon,
-  FileButton,
-  Flex,
-  Image,
-  Modal,
-  UnstyledButton,
-} from "@mantine/core";
+import { FileButton, Flex, UnstyledButton } from "@mantine/core";
 import { useRef, useState } from "react";
-import { TbPlus, TbX } from "react-icons/tb";
+import { TbPlus } from "react-icons/tb";
+
+import GalleryPhotoPickerItem from "./GalleryPhotoPickerItem";
+import PhotoPreview from "./PhotoPreview";
 
 interface GalleryPhotoPickerProps {
   maxCount?: number;
+  initialImages?: string[];
   onChange?: (files: File[]) => void;
-  value?: File[];
+  onInitialImagesChange?: (images: string[]) => void;
 }
 
 export default function GalleryPhotoPicker({
   maxCount = 5,
+  initialImages,
   onChange,
-  value,
+  onInitialImagesChange,
 }: GalleryPhotoPickerProps) {
-  const [files, setFiles] = useState<File[]>(value || []);
+  const [files, setFiles] = useState<File[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const resetRef = useRef<() => void>(null);
+  const initialImagesCount = initialImages?.length || 0;
 
   const handleFileChange = (uploadedFiles: File[]) => {
     const newFiles = [...files];
     uploadedFiles.forEach((file) => {
-      if (newFiles.length < maxCount) {
+      if (newFiles.length < maxCount - initialImagesCount) {
         newFiles.push(file);
       }
     });
@@ -39,39 +38,32 @@ export default function GalleryPhotoPicker({
   return (
     <>
       <Flex gap="md" wrap="wrap">
+        {initialImages?.map((imageUrl, index) => (
+          <GalleryPhotoPickerItem
+            key={index}
+            imageUrl={imageUrl}
+            onImageClick={() => setPreviewUrl(imageUrl)}
+            onActionClick={() => {
+              const newImages = initialImages.filter((_, i) => i !== index);
+              onInitialImagesChange?.(newImages);
+            }}
+          />
+        ))}
         {files.map((file, index) => {
-          const imageUrl = URL.createObjectURL(file);
           return (
-            <div
+            <GalleryPhotoPickerItem
               key={index}
-              style={{
-                position: "relative",
+              imageUrl={URL.createObjectURL(file)}
+              onImageClick={() => setPreviewUrl(URL.createObjectURL(file))}
+              onActionClick={() => {
+                const newFiles = files.filter((_, i) => i !== index);
+                setFiles(newFiles);
+                onChange?.(newFiles);
               }}
-            >
-              <Image
-                className="cursor-pointer"
-                src={imageUrl}
-                w={96}
-                h={96}
-                fit="contain"
-                onClick={() => setPreviewUrl(imageUrl)}
-              />
-              <ActionIcon
-                className="absolute top-1 right-0"
-                size={24}
-                variant="default"
-                onClick={() => {
-                  const newFiles = files.filter((_, i) => i !== index);
-                  setFiles(newFiles);
-                  onChange?.(newFiles);
-                }}
-              >
-                <TbX size={24} />
-              </ActionIcon>
-            </div>
+            />
           );
         })}
-        {files.length < maxCount && (
+        {files.length + initialImagesCount < maxCount && (
           <FileButton
             resetRef={resetRef}
             onChange={handleFileChange}
@@ -80,7 +72,7 @@ export default function GalleryPhotoPicker({
           >
             {(props) => (
               <UnstyledButton
-                className="flex h-24 w-24 items-center justify-center rounded-md border-2 border-dashed border-gray-900/20 text-gray-900/20"
+                className="flex h-24 w-24 items-center justify-center rounded-md border-2 border-dashed border-gray-900/20 text-gray-900/20 dark:border-gray-400/20 dark:text-gray-400/20"
                 {...props}
               >
                 <TbPlus size={48} />
@@ -90,16 +82,7 @@ export default function GalleryPhotoPicker({
         )}
       </Flex>
 
-      <Modal
-        opened={!!previewUrl}
-        onClose={() => setPreviewUrl(null)}
-        size="xl"
-        padding="xs"
-      >
-        {previewUrl && (
-          <Image src={previewUrl} fit="contain" maw="100%" mah="80vh" />
-        )}
-      </Modal>
+      <PhotoPreview previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} />
     </>
   );
 }
