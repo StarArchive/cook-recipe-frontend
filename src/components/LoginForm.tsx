@@ -43,6 +43,14 @@ export default function LoginForm({ className }: Props) {
         });
         navigate("/");
       },
+      onError: (error) => {
+        notifications.show({
+          title: "登录失败",
+          message: error.message,
+          color: "red",
+          position: "top-center",
+        });
+      },
     },
   );
 
