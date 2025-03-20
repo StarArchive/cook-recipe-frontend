@@ -5,9 +5,9 @@ import type { User, UserProfile } from "@/client/types";
 import RootLayout from "@/layouts/RootLayout";
 import { useCurrentUser, useUserProfile } from "@/utils";
 
-import EmailTab from "./Tabs/email";
-import PasswordTab from "./Tabs/password";
-import ProfileTab from "./Tabs/profile";
+import EmailTab from "./Tabs/Email";
+import PasswordTab from "./Tabs/Password";
+import ProfileTab from "./Tabs/Profile";
 
 const settingsTab = {
   defaultValue: "profile",
@@ -62,7 +62,7 @@ export default function UserSettings() {
           {user &&
             profile &&
             settingsTab.items.map((tab) => (
-              <Tabs.Panel key={tab.value} value={tab.value} pt="xl">
+              <Tabs.Panel key={tab.value} value={tab.value} pt="md">
                 {tab.panel(user, profile)}
               </Tabs.Panel>
             ))}

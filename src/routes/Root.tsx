@@ -10,11 +10,11 @@ import { TbFileX } from "react-icons/tb";
 import useSWR from "swr";
 
 import { getRecipes } from "@/client";
-import type { RecipeListItem } from "@/client/types";
+import type { Recipe } from "@/client/types";
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
 
-function RecipeCardList({ recipes }: { recipes?: RecipeListItem[] }) {
+function RecipeCardList({ recipes }: { recipes?: Recipe[] }) {
   if (!recipes || recipes.length === 0) {
     return (
       <Flex justify="center" align="center" direction="column" mt={120}>
