@@ -6,14 +6,16 @@ import {
   TbStar,
   TbUpload,
 } from "react-icons/tb";
+import { useSWRConfig } from "swr";
 import { Link, useLocation } from "wouter";
 
 import { logout } from "@/client";
-import { useCurrentUser } from "@/utils";
+import { getUserDisplayName, useCurrentUser } from "@/utils";
 
 export default function UserActions() {
-  const { user, isLoading } = useCurrentUser();
+  const { user, isLoading, isError } = useCurrentUser();
   const [, navigate] = useLocation();
+  const { mutate } = useSWRConfig();
 
   const actions = [
     {
@@ -42,12 +44,13 @@ export default function UserActions() {
       text: "退出登录",
       onClick: () => {
         logout();
+        mutate("/users/me");
       },
     },
   ];
 
   if (isLoading) return null;
-  if (!user?.name)
+  if (!user?.name || isError)
     return (
       <>
         <Button component={Link} to="/register" variant="subtle">
@@ -61,9 +64,9 @@ export default function UserActions() {
 
   return (
     <>
-      <HoverCard closeDelay={500000}>
+      <HoverCard>
         <HoverCard.Target>
-          <Text>{user.name}</Text>
+          <Text>{getUserDisplayName(user)}</Text>
         </HoverCard.Target>
         <HoverCard.Dropdown p="xs">
           <div className="flex flex-col">
