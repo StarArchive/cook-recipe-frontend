@@ -1,0 +1,43 @@
+import { Tabs } from "@mantine/core";
+import { TbChefHat, TbHeart } from "react-icons/tb";
+
+import UserPageCreatedRecipeTab from "./CreatedRecipes";
+import UserPageStarredRecipesTab from "./StarredRecipes";
+
+interface Props {
+  id: number;
+}
+
+const tabs = [
+  {
+    value: "created-recipes",
+    icon: <TbChefHat size={16} />,
+    label: "菜谱",
+    panel: (userId: number) => <UserPageCreatedRecipeTab userId={userId} />,
+  },
+  {
+    value: "starred-recipes",
+    icon: <TbHeart size={16} />,
+    label: "收藏",
+    panel: (userId: number) => <UserPageStarredRecipesTab userId={userId} />,
+  },
+];
+
+export default function UserPageTabs({ id }: Props) {
+  return (
+    <Tabs defaultValue="created-recipes" color="blue">
+      <Tabs.List>
+        {tabs.map((tab) => (
+          <Tabs.Tab key={tab.value} value={tab.value} leftSection={tab.icon}>
+            {tab.label}
+          </Tabs.Tab>
+        ))}
+      </Tabs.List>
+      {tabs.map((tab) => (
+        <Tabs.Panel key={tab.value} value={tab.value} pt="xs">
+          {tab.panel(id)}
+        </Tabs.Panel>
+      ))}
+    </Tabs>
+  );
+}

@@ -31,16 +31,6 @@ export interface CreateRecipeDto {
   images: string[];
 }
 
-export interface RecipeListItem {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  description: string | null;
-  published: boolean;
-  authorId: number;
-  images: string[];
-}
 export interface RecipeAuthor {
   id: number;
   name: string;
@@ -84,4 +74,9 @@ export interface UploadFileResponse {
 export interface UserProfile {
   bio?: string;
   avatar?: string;
+}
+
+export interface ChangeUserPasswordDto {
+  oldPassword: string;
+  newPassword: string;
 }

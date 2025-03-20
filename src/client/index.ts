@@ -2,10 +2,10 @@ import { notifications } from "@mantine/notifications";
 import { navigate } from "wouter/use-browser-location";
 
 import type {
+  ChangeUserPasswordDto,
   CreateRecipeDto,
   LoginDto,
   Recipe,
-  RecipeListItem,
   RegisterDto,
   UploadFileResponse,
   User,
@@ -110,8 +110,14 @@ export async function updateRecipe(
   return fetchWithToken("PATCH", `/recipes/${id}`, updateRecipeDto);
 }
 
-export async function getRecipes(): Promise<RecipeListItem[]> {
+export async function getRecipes(): Promise<Recipe[]> {
   return fetchWithToken("GET", "/recipes");
+}
+
+export async function getRecipesByUserId(
+  userId: number | string,
+): Promise<Recipe[]> {
+  return fetchWithToken("GET", `/recipes?userId=${userId}`);
 }
 
 export async function getRecipe(id: string): Promise<Recipe> {
@@ -135,4 +141,8 @@ export async function getUserProfile(id: string): Promise<UserProfile> {
 
 export async function updateMe(body: Partial<User>) {
   return fetchWithToken("PATCH", "/users/me", body);
+}
+
+export async function changePassword(body: ChangeUserPasswordDto) {
+  return fetchWithToken("POST", "/users/me/changePassword", body);
 }
