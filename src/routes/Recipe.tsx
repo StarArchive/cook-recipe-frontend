@@ -1,12 +1,17 @@
 import { ActionIcon, Container, Stack, Title } from "@mantine/core";
-import { TbEdit } from "react-icons/tb";
+import { TbEdit, TbStar } from "react-icons/tb";
 import { useLocation } from "wouter";
 
 import ImagesCarousel from "@/components/ImagesCarousel";
 import IngredientsTable from "@/components/IngredientsTable";
 import RecipeStep from "@/components/RecipeStep";
 import RootLayout from "@/layouts/RootLayout";
-import { useCurrentUser, useRecipe } from "@/utils";
+import {
+  useCurrentUser,
+  useRecipe,
+  useRecipeStarred,
+  useRecipeStarredMutation,
+} from "@/utils";
 
 import NotFound from "./NotFound";
 
@@ -18,6 +23,9 @@ export default function Recipe({ id }: Props) {
   const [, navigate] = useLocation();
   const { user } = useCurrentUser();
   const { recipe, isLoading } = useRecipe(id);
+  const { starred } = useRecipeStarred(id);
+  console.log(starred);
+  const { trigger } = useRecipeStarredMutation(id);
 
   if (isLoading)
     return (
@@ -51,6 +59,16 @@ export default function Recipe({ id }: Props) {
                   <TbEdit size={20} />
                 </ActionIcon>
               )}
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                color={starred ? "yellow" : "gray"}
+                onClick={() => {
+                  trigger();
+                }}
+              >
+                <TbStar size={20} />
+              </ActionIcon>
             </Title>
             <ImagesCarousel images={recipe.images} title={recipe.title} />
           </Stack>

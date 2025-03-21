@@ -146,3 +146,19 @@ export async function updateMe(body: Partial<User>) {
 export async function changePassword(body: ChangeUserPasswordDto) {
   return fetchWithToken("POST", "/users/me/changePassword", body);
 }
+
+export async function getUserStarredRecipes(
+  userId: number,
+): Promise<{ recipes: Recipe[] }> {
+  return fetchWithToken("GET", `/users/${userId}/starred`);
+}
+
+export async function starRecipe(recipeId: number | string) {
+  return fetchWithToken("POST", `/recipes/${recipeId}/starred`);
+}
+
+export async function getRecipeStarred(
+  recipeId: number | string,
+): Promise<{ starred: boolean }> {
+  return fetchWithToken("GET", `/recipes/${recipeId}/starred`);
+}

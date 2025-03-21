@@ -5,8 +5,11 @@ import {
   changePassword,
   getRecipe,
   getRecipesByUserId,
+  getRecipeStarred,
   getUser,
   getUserProfile,
+  getUserStarredRecipes,
+  starRecipe,
   updateMe,
 } from "./client";
 
@@ -111,4 +114,43 @@ export function useUserRecipes(userId: number) {
 
 export function getUserDisplayName(user: User) {
   return user.nickname || user.name;
+}
+
+export function useUserStarredRecipes(userId: number) {
+  const { data, error, isLoading } = useSWR(`/user/${userId}/starred`, () =>
+    getUserStarredRecipes(userId),
+  );
+
+  return {
+    starred: data,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useRecipeStarred(recipeId: number | string) {
+  const {
+    data: { starred } = {},
+    error,
+    isLoading,
+  } = useSWR(`/recipes/${recipeId}/starred`, () => getRecipeStarred(recipeId));
+
+  return {
+    starred,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useRecipeStarredMutation(recipeId: number | string) {
+  const { trigger, isMutating, error } = useSWRMutation(
+    `/recipes/${recipeId}/starred`,
+    () => starRecipe(recipeId),
+  );
+
+  return {
+    trigger,
+    isMutating,
+    error,
+  };
 }

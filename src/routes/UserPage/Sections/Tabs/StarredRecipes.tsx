@@ -1,7 +1,7 @@
 import { SimpleGrid, Skeleton } from "@mantine/core";
 
-import type { Recipe } from "@/client/types";
 import RecipeGrid from "@/components/RecipeGrid";
+import { useUserStarredRecipes } from "@/utils";
 
 import EmptyState from "./EmptyState";
 
@@ -10,18 +10,19 @@ interface Props {
 }
 
 export default function UserPageStarredRecipesTab({ userId }: Props) {
-  const likedRecipes: Recipe[] = [];
-  const isLoading = false;
+  const { starred, isLoading, isError } = useUserStarredRecipes(userId);
 
-  return isLoading ? (
-    <SimpleGrid cols={3} spacing="md">
-      {new Array(3).map((i) => (
-        <Skeleton key={i} height={320} radius="md" />
-      ))}
-    </SimpleGrid>
-  ) : likedRecipes.length > 0 ? (
-    <RecipeGrid recipes={likedRecipes} />
-  ) : (
-    <EmptyState type="starred" />
-  );
+  if (isLoading || isError)
+    return (
+      <SimpleGrid cols={3} spacing="md">
+        {new Array(3).map((i) => (
+          <Skeleton key={i} height={320} radius="md" />
+        ))}
+      </SimpleGrid>
+    );
+
+  if (!starred || starred.recipes.length === 0)
+    return <EmptyState type="starred" />;
+
+  return <RecipeGrid recipes={starred.recipes} />;
 }
