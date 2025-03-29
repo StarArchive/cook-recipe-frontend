@@ -22,14 +22,14 @@ export default function UserActions() {
       icon: <TbReceipt size={14} />,
       text: "我的食谱",
       onClick: () => {
-        navigate(`/space/${user?.id}`);
+        navigate(`/user/${user?.id}`);
       },
     },
     {
       icon: <TbStar size={14} />,
       text: "收藏列表",
       onClick: () => {
-        navigate(`/space/${user?.id}/stars`);
+        navigate(`/user/${user?.id}/starred-recipes`);
       },
     },
     {

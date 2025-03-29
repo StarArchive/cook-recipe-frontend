@@ -1,3 +1,5 @@
+import { useLocation } from "wouter";
+
 import RootLayout from "@/layouts/RootLayout";
 import { useUser, useUserProfile } from "@/utils";
 
@@ -6,11 +8,13 @@ import UserPageTabs from "./Sections/Tabs";
 
 interface Props {
   id: string;
+  tabAnchor: string;
 }
 
-export default function UserPage({ id }: Props) {
+export default function UserPage({ id, tabAnchor }: Props) {
   const { user } = useUser(id);
   const { profile } = useUserProfile(id);
+  const [, navigate] = useLocation();
 
   if (!user || !profile) return <RootLayout>Loading...</RootLayout>;
 
@@ -18,7 +22,11 @@ export default function UserPage({ id }: Props) {
     <RootLayout>
       <div className="mx-auto max-w-3xl">
         <UserPageBasicInfo user={user} profile={profile} />
-        <UserPageTabs id={user.id} />
+        <UserPageTabs
+          id={user.id}
+          anchor={tabAnchor}
+          onChange={(value) => navigate(`/user/${id}/${value}`)}
+        />
       </div>
     </RootLayout>
   );

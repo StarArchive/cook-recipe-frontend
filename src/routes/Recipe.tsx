@@ -1,12 +1,25 @@
-import { ActionIcon, Container, Stack, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Anchor,
+  Avatar,
+  Container,
+  Divider,
+  Group,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { useMemo } from "react";
 import { TbEdit, TbStar } from "react-icons/tb";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 
+import { getImageUrl } from "@/client";
 import ImagesCarousel from "@/components/ImagesCarousel";
 import IngredientsTable from "@/components/IngredientsTable";
 import RecipeStep from "@/components/RecipeStep";
 import RootLayout from "@/layouts/RootLayout";
 import {
+  getUserDisplayName,
   useCurrentUser,
   useRecipe,
   useRecipeStarred,
@@ -24,8 +37,17 @@ export default function Recipe({ id }: Props) {
   const { user } = useCurrentUser();
   const { recipe, isLoading } = useRecipe(id);
   const { starred } = useRecipeStarred(id);
-  console.log(starred);
   const { trigger } = useRecipeStarredMutation(id);
+  const avatarUrl = useMemo(
+    () =>
+      recipe?.author.profile.avatar &&
+      getImageUrl(recipe.author.profile.avatar).toString(),
+    [recipe?.author],
+  );
+  const displayName = useMemo(
+    () => recipe?.author && getUserDisplayName(recipe.author),
+    [recipe?.author],
+  );
 
   if (isLoading)
     return (
@@ -46,7 +68,7 @@ export default function Recipe({ id }: Props) {
       <Container>
         <Stack gap="xl">
           <Stack gap="lg">
-            <Title className="flex items-center gap-2" order={1}>
+            <Title className="flex items-center gap-1" order={1}>
               {recipe.title}
               {user?.id === recipe.author.id && (
                 <ActionIcon
@@ -71,6 +93,21 @@ export default function Recipe({ id }: Props) {
               </ActionIcon>
             </Title>
             <ImagesCarousel images={recipe.images} title={recipe.title} />
+            <Divider my="md" />
+
+            <Group
+              gap="xs"
+              onClick={() => navigate(`/user/${recipe.author.id}`)}
+            >
+              <Avatar
+                src={avatarUrl}
+                alt={displayName}
+                className="cursor-pointer"
+              ></Avatar>
+              <Anchor underline="never" component={Link}>{recipe.author.name}</Anchor>
+            </Group>
+
+            <Text>{recipe.description}</Text>
           </Stack>
 
           <Stack gap="lg">

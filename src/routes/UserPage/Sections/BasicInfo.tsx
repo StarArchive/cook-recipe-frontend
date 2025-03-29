@@ -35,9 +35,7 @@ export default function UserPageBasicInfo({ user, profile }: Props) {
       <Stack gap="xs" justify="center">
         <Title order={1}>{displayName}</Title>
         <Text c="dimmed">{joinedAt}&nbsp;加入</Text>
-        <Text c="dimmed">
-          {profile.bio || "是否输入一些东西来证明自己存在过"}
-        </Text>
+        <Text c="dimmed">{profile.bio}</Text>
       </Stack>
     </div>
   );

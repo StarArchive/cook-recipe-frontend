@@ -6,6 +6,8 @@ import UserPageStarredRecipesTab from "./StarredRecipes";
 
 interface Props {
   id: number;
+  anchor: string;
+  onChange: (value: string | null) => void;
 }
 
 const tabs = [
@@ -23,9 +25,9 @@ const tabs = [
   },
 ];
 
-export default function UserPageTabs({ id }: Props) {
+export default function UserPageTabs({ id, anchor, onChange }: Props) {
   return (
-    <Tabs defaultValue="created-recipes" color="blue">
+    <Tabs color="blue" value={anchor} onChange={onChange}>
       <Tabs.List>
         {tabs.map((tab) => (
           <Tabs.Tab key={tab.value} value={tab.value} leftSection={tab.icon}>
