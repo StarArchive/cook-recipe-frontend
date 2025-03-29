@@ -1,15 +1,16 @@
-import { Container, SimpleGrid, Text, Title } from "@mantine/core";
-import { useSearchParams } from "wouter";
+import { Container, SimpleGrid, Title } from "@mantine/core";
 
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
-import { useRecipeSearch } from "@/utils";
+import { useCategoryRecipes } from "@/utils";
 
-export default function Search() {
-  const [searchParams] = useSearchParams();
-  const query = searchParams.get("query") || "";
+interface Props {
+  id: string;
+  title: string;
+}
 
-  const { recipes, isLoading } = useRecipeSearch(query);
+export default function Category({ id, title }: Props) {
+  const { recipes, isLoading } = useCategoryRecipes(id);
 
   if (isLoading) {
     return (
@@ -25,8 +26,7 @@ export default function Search() {
     return (
       <RootLayout>
         <Container>
-          <Title order={1}>没有找到与 “{query}” 相关的食谱</Title>
-          <Text>请尝试其他关键词或查看我们的热门食谱。</Text>
+          <Title order={1}>当前分类 “{title}” 为空</Title>
         </Container>
       </RootLayout>
     );
@@ -36,7 +36,7 @@ export default function Search() {
     <RootLayout>
       <Container>
         <Title order={1} mb="md">
-          “{query}” 的搜索结果
+          {title}
         </Title>
         <SimpleGrid cols={3} spacing="md">
           {recipes.map((recipe) => (

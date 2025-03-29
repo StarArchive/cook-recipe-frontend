@@ -4,6 +4,7 @@ import useSWRMutation from "swr/mutation";
 import {
   changePassword,
   getRecipe,
+  getRecipesByCategoryId,
   getRecipesByUserId,
   getRecipeStarred,
   getUser,
@@ -160,6 +161,19 @@ export function useRecipeSearch(query: string) {
   const { data, error, isLoading } = useSWR(
     `/recipes/search?query=${query}`,
     () => searchRecipes(query),
+  );
+
+  return {
+    recipes: data,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useCategoryRecipes(categoryId: number | string) {
+  const { data, error, isLoading } = useSWR(
+    `/recipes?categoryId=${categoryId}`,
+    () => getRecipesByCategoryId(categoryId),
   );
 
   return {

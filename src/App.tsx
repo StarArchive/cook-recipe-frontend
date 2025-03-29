@@ -1,8 +1,10 @@
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { useEffect } from "react";
 import { SWRConfig } from "swr";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 
+import Category from "@/routes/Category";
 import Login from "@/routes/Login";
 import NotFound from "@/routes/NotFound";
 import Recipe from "@/routes/Recipe";
@@ -19,11 +21,13 @@ export default function App() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
 
-  if (location.startsWith("/search")) {
-    document.title = `${query}的搜索结果 - 在线食谱网站`;
-  } else {
-    document.title = "在线食谱网站";
-  }
+  useEffect(() => {
+    if (location.startsWith("/search")) {
+      document.title = `${query}的搜索结果 - 在线食谱网站`;
+    } else {
+      document.title = "在线食谱网站";
+    }
+  }, [location, query]);
 
   return (
     <SWRConfig>
@@ -46,6 +50,14 @@ export default function App() {
           </Route>
           <Route path="/user/:id/:tab">
             {(params) => <UserPage id={params.id} tabAnchor={params.tab} />}
+          </Route>
+          <Route path="/category/:id">
+            {(params) => (
+              <Category
+                id={params.id}
+                title={searchParams.get("title") || ""}
+              />
+            )}
           </Route>
           <Route path="/settings" component={UserSettings} />
           <Route path="/search" component={Search} />

@@ -120,6 +120,12 @@ export async function getRecipesByUserId(
   return fetchWithToken("GET", `/recipes?userId=${userId}`);
 }
 
+export async function getRecipesByCategoryId(
+  categoryId: number | string,
+): Promise<Recipe[]> {
+  return fetchWithToken("GET", `/recipes?categoryId=${categoryId}`);
+}
+
 export async function getRecipe(id: string): Promise<Recipe> {
   return fetchWithToken("GET", `/recipes/${id}`);
 }

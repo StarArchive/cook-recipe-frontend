@@ -60,6 +60,7 @@ export default function RootLayout({ children }: Props) {
               leftSection={<TbSearch size={16} />}
               className="w-full md:w-64 lg:w-80"
               radius="md"
+              value={searchValue}
               onChange={(event) => setSearchValue(event.currentTarget.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {

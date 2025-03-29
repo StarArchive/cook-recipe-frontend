@@ -41,6 +41,7 @@ export interface RecipeAuthor {
 export interface RecipeIngredient {
   quantity: string;
   name: string;
+  categoryId: number | null;
 }
 
 export interface RecipeStep {

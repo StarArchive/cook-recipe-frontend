@@ -1,4 +1,5 @@
-import { Table, rem } from "@mantine/core";
+import { Anchor, Table, rem } from "@mantine/core";
+import { Link, useLocation } from "wouter";
 
 import type { RecipeIngredient } from "@/client/types";
 
@@ -7,6 +8,8 @@ interface Props {
 }
 
 export default function IngredientsTable({ ingredients }: Props) {
+  const [, navigate] = useLocation();
+
   return (
     <Table>
       <Table.Tbody>
@@ -17,7 +20,22 @@ export default function IngredientsTable({ ingredients }: Props) {
               borderBottom: `${rem(1)} solid var(--table-border-color)`,
             }}
           >
-            <Table.Td>{ingredient.name}</Table.Td>
+            <Table.Td>
+              {ingredient.categoryId ? (
+                <Anchor
+                  component={Link}
+                  onClick={() =>
+                    navigate(
+                      `/category/${ingredient.categoryId}?title=${encodeURIComponent(ingredient.name)}`,
+                    )
+                  }
+                >
+                  {ingredient.name}
+                </Anchor>
+              ) : (
+                ingredient.name
+              )}
+            </Table.Td>
             <Table.Td>{ingredient.quantity}</Table.Td>
           </Table.Tr>
         ))}
