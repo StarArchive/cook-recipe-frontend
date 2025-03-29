@@ -9,6 +9,7 @@ import {
   getUser,
   getUserProfile,
   getUserStarredRecipes,
+  searchRecipes,
   starRecipe,
   updateMe,
 } from "./client";
@@ -112,7 +113,7 @@ export function useUserRecipes(userId: number) {
   };
 }
 
-export function getUserDisplayName(user: User) {
+export function getUserDisplayName(user: { nickname?: string; name?: string }) {
   return user.nickname || user.name;
 }
 
@@ -152,5 +153,18 @@ export function useRecipeStarredMutation(recipeId: number | string) {
     trigger,
     isMutating,
     error,
+  };
+}
+
+export function useRecipeSearch(query: string) {
+  const { data, error, isLoading } = useSWR(
+    `/recipes/search?query=${query}`,
+    () => searchRecipes(query),
+  );
+
+  return {
+    recipes: data,
+    isLoading,
+    isError: error,
   };
 }

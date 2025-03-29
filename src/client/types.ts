@@ -35,6 +35,7 @@ export interface RecipeAuthor {
   id: number;
   name: string;
   roles: Role[];
+  profile: UserProfile;
 }
 
 export interface RecipeIngredient {

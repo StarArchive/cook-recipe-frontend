@@ -162,3 +162,7 @@ export async function getRecipeStarred(
 ): Promise<{ starred: boolean }> {
   return fetchWithToken("GET", `/recipes/${recipeId}/starred`);
 }
+
+export async function searchRecipes(query: string): Promise<Recipe[]> {
+  return fetchWithToken("GET", `/recipes/search?query=${query}`);
+}

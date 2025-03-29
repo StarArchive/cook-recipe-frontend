@@ -1,7 +1,7 @@
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { SWRConfig } from "swr";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation, useSearchParams } from "wouter";
 
 import Login from "@/routes/Login";
 import NotFound from "@/routes/NotFound";
@@ -9,11 +9,22 @@ import Recipe from "@/routes/Recipe";
 import RecipeEdit from "@/routes/RecipeEdit";
 import Register from "@/routes/Register";
 import Root from "@/routes/Root";
+import Search from "@/routes/Search";
 import Upload from "@/routes/Upload";
 import UserPage from "@/routes/UserPage";
 import UserSettings from "@/routes/UserSettings";
 
 export default function App() {
+  const [location] = useLocation();
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("query") || "";
+
+  if (location.startsWith("/search")) {
+    document.title = `${query}的搜索结果 - 在线食谱网站`;
+  } else {
+    document.title = "在线食谱网站";
+  }
+
   return (
     <SWRConfig>
       <MantineProvider classNamesPrefix="app" defaultColorScheme="auto">
@@ -28,10 +39,16 @@ export default function App() {
           <Route path="/recipe/:id/edit">
             {(params) => <RecipeEdit id={params.id} />}
           </Route>
-          <Route path="/space/:id">
-            {(params) => <UserPage id={params.id} />}
+          <Route path="/user/:id">
+            {(params) => (
+              <UserPage id={params.id} tabAnchor="created-recipes" />
+            )}
+          </Route>
+          <Route path="/user/:id/:tab">
+            {(params) => <UserPage id={params.id} tabAnchor={params.tab} />}
           </Route>
           <Route path="/settings" component={UserSettings} />
+          <Route path="/search" component={Search} />
           <Route>
             <NotFound />
           </Route>
