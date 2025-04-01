@@ -221,7 +221,7 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
               <GalleryPhotoPicker
                 maxCount={1}
                 onChange={setStepFiles}
-                initialImages={values?.steps[index].images.map((image) =>
+                initialImages={values?.steps[index]?.images.map((image) =>
                   getImageUrl(image).toString(),
                 )}
                 onInitialImagesChange={() => {
