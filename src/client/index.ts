@@ -2,6 +2,7 @@ import { notifications } from "@mantine/notifications";
 import { navigate } from "wouter/use-browser-location";
 
 import type {
+  Category,
   ChangeUserPasswordDto,
   CreateRecipeDto,
   LoginDto,
@@ -171,4 +172,12 @@ export async function getRecipeStarred(
 
 export async function searchRecipes(query: string): Promise<Recipe[]> {
   return fetchWithToken("GET", `/recipes/search?query=${query}`);
+}
+
+export async function getCategories(): Promise<Category[]> {
+  return fetchWithToken("GET", "/categories");
+}
+
+export async function getCategory(id: string): Promise<Category> {
+  return fetchWithToken("GET", `/categories/${id}`);
 }

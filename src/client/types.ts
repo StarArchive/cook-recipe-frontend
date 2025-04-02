@@ -82,3 +82,13 @@ export interface ChangeUserPasswordDto {
   oldPassword: string;
   newPassword: string;
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  parentId: number | null;
+}
+
+export interface CategoryWithChildren extends Category {
+  children: CategoryWithChildren[];
+}
