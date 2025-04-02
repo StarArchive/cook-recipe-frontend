@@ -5,6 +5,7 @@ import { SWRConfig } from "swr";
 import { Route, Switch, useLocation, useSearchParams } from "wouter";
 
 import Category from "@/routes/Category";
+import CategoryList from "@/routes/CategoryList";
 import Login from "@/routes/Login";
 import NotFound from "@/routes/NotFound";
 import Recipe from "@/routes/Recipe";
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/user/:id/:tab">
             {(params) => <UserPage id={params.id} tabAnchor={params.tab} />}
           </Route>
+          <Route path="/category/" component={CategoryList} />
           <Route path="/category/:id">
             {(params) => (
               <Category

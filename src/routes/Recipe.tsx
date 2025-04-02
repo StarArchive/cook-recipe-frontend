@@ -14,17 +14,17 @@ import { TbEdit, TbStar } from "react-icons/tb";
 import { Link, useLocation } from "wouter";
 
 import { getImageUrl } from "@/client";
-import ImagesCarousel from "@/components/ImagesCarousel";
-import IngredientsTable from "@/components/IngredientsTable";
-import RecipeStep from "@/components/RecipeStep";
-import RootLayout from "@/layouts/RootLayout";
 import {
   getUserDisplayName,
   useCurrentUser,
   useRecipe,
   useRecipeStarred,
   useRecipeStarredMutation,
-} from "@/utils";
+} from "@/client/hooks";
+import ImagesCarousel from "@/components/ImagesCarousel";
+import IngredientsTable from "@/components/IngredientsTable";
+import RecipeStep from "@/components/RecipeStep";
+import RootLayout from "@/layouts/RootLayout";
 
 import NotFound from "./NotFound";
 
@@ -104,7 +104,9 @@ export default function Recipe({ id }: Props) {
                 alt={displayName}
                 className="cursor-pointer"
               ></Avatar>
-              <Anchor underline="never" component={Link}>{recipe.author.name}</Anchor>
+              <Anchor underline="never" component={Link}>
+                {recipe.author.name}
+              </Anchor>
             </Group>
 
             <Text>{recipe.description}</Text>

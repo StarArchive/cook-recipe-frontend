@@ -1,9 +1,9 @@
 import { Container, SimpleGrid, Text, Title } from "@mantine/core";
 import { useSearchParams } from "wouter";
 
+import { useRecipeSearch } from "@/client/hooks";
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
-import { useRecipeSearch } from "@/utils";
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -38,7 +38,7 @@ export default function Search() {
         <Title order={1} mb="md">
           “{query}” 的搜索结果
         </Title>
-        <SimpleGrid cols={3} spacing="md">
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
           {recipes.map((recipe) => (
             <RecipeCard
               key={recipe.id}

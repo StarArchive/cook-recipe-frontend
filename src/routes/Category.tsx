@@ -1,15 +1,15 @@
 import { Container, SimpleGrid, Title } from "@mantine/core";
 
+import { useCategory, useCategoryRecipes } from "@/client/hooks";
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
-import { useCategoryRecipes } from "@/utils";
 
 interface Props {
   id: string;
-  title: string;
 }
 
-export default function Category({ id, title }: Props) {
+export default function Category({ id }: Props) {
+  const { category } = useCategory(id);
   const { recipes, isLoading } = useCategoryRecipes(id);
 
   if (isLoading) {
@@ -26,7 +26,7 @@ export default function Category({ id, title }: Props) {
     return (
       <RootLayout>
         <Container>
-          <Title order={1}>当前分类 “{title}” 为空</Title>
+          <Title order={1}>当前分类 “{category?.name}” 为空</Title>
         </Container>
       </RootLayout>
     );
@@ -36,7 +36,7 @@ export default function Category({ id, title }: Props) {
     <RootLayout>
       <Container>
         <Title order={1} mb="md">
-          {title}
+          {category?.name}
         </Title>
         <SimpleGrid cols={3} spacing="md">
           {recipes.map((recipe) => (

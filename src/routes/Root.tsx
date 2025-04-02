@@ -1,18 +1,100 @@
 import {
   ActionIcon,
   Button,
-  Container,
   Flex,
   SimpleGrid,
+  Text,
   Title,
 } from "@mantine/core";
-import { TbFileX } from "react-icons/tb";
+import { GiNoodles } from "react-icons/gi";
+import { TbCake, TbEggs, TbFileX, TbFish, TbSoup, TbSun } from "react-icons/tb";
 import useSWR from "swr";
+import { useLocation } from "wouter";
 
 import { getRecipes } from "@/client";
 import type { Recipe } from "@/client/types";
 import RecipeCard from "@/components/RecipeCard";
 import RootLayout from "@/layouts/RootLayout";
+
+const sidebarConfig = [
+  {
+    icon: <TbSun className="text-amber-500" size={32} />,
+    text: "早餐",
+    to: "/category/24",
+  },
+  {
+    icon: <TbFish className="text-blue-500" size={32} />,
+    text: "鱼",
+    to: "/category/378",
+  },
+  {
+    icon: <TbEggs className="text-yellow-500" size={32} />,
+    text: "鸡蛋",
+    to: "/category/422",
+  },
+  {
+    icon: <TbSoup className="text-orange-400" size={32} />,
+    text: "汤羹",
+    to: "/category/321",
+  },
+  {
+    icon: <TbCake className="text-pink-500" size={32} />,
+    text: "烘焙",
+    to: "/category/47",
+  },
+  {
+    icon: <GiNoodles className="text-yellow-600" size={32} />,
+    text: "面条",
+    to: "/category/458",
+  },
+];
+
+function SidebarItem({
+  icon,
+  text,
+  to,
+}: {
+  icon: React.ReactNode;
+  text: string;
+  to: string;
+}) {
+  const [, navigate] = useLocation();
+
+  return (
+    <div
+      className="pointer-events-auto flex cursor-pointer items-center gap-2"
+      onClick={() => navigate(to)}
+    >
+      <ActionIcon variant="transparent" size={32}>
+        {icon}
+      </ActionIcon>
+      <Text component="span" className="whitespace-nowrap" size="sm">
+        {text}
+      </Text>
+    </div>
+  );
+}
+
+function Sidebar() {
+  return (
+    <Flex
+      className="max-md:hidden"
+      direction="column"
+      align="start"
+      gap="lg"
+      p="md"
+    >
+      {sidebarConfig.map((item, index) => (
+        <SidebarItem
+          key={index}
+          icon={item.icon}
+          text={item.text}
+          to={item.to}
+        />
+      ))}
+    </Flex>
+  );
+}
 
 function RecipeCardList({ recipes }: { recipes?: Recipe[] }) {
   if (!recipes || recipes.length === 0) {
@@ -32,8 +114,8 @@ function RecipeCardList({ recipes }: { recipes?: Recipe[] }) {
   }
 
   return (
-    <Container>
-      <SimpleGrid cols={3}>
+    <div>
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }}>
         {recipes.map((recipe, index) => (
           <RecipeCard
             key={index}
@@ -44,7 +126,7 @@ function RecipeCardList({ recipes }: { recipes?: Recipe[] }) {
           />
         ))}
       </SimpleGrid>
-    </Container>
+    </div>
   );
 }
 
@@ -53,7 +135,10 @@ export default function Root() {
 
   return (
     <RootLayout>
-      {!isLoading && <RecipeCardList recipes={recipes} />}
+      <div className="flex gap-4 md:mx-auto md:w-8/13">
+        <Sidebar />
+        {!isLoading && <RecipeCardList recipes={recipes} />}
+      </div>
     </RootLayout>
   );
 }

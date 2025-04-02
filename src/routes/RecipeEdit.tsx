@@ -2,10 +2,10 @@ import { Center, Container, Loader, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 
+import { useCurrentUser, useRecipe } from "@/client/hooks";
 import type { CreateRecipeDto } from "@/client/types";
 import RecipeForm from "@/components/RecipeForm";
 import RootLayout from "@/layouts/RootLayout";
-import { useCurrentUser, useRecipe } from "@/utils";
 
 import NotFound from "./NotFound";
 
