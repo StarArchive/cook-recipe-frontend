@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { TbCheck, TbX } from "react-icons/tb";
 
-import { useUserPasswordMutation } from "@/utils";
+import { useUserPasswordMutation } from "@/client/hooks";
 
 const PASSWORD_FORM_CONFIG = {
   initialValues: {

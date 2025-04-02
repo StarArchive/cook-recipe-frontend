@@ -16,8 +16,8 @@ import { useMemo, useState } from "react";
 import { TbCheck, TbUpload, TbX } from "react-icons/tb";
 
 import { getImageUrl, uploadFile } from "@/client";
+import { useUserMutation } from "@/client/hooks";
 import type { User, UserProfile } from "@/client/types";
-import { useUserMutation } from "@/utils";
 
 interface Props {
   user: User;

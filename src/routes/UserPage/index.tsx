@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 
+import { useUser, useUserProfile } from "@/client/hooks";
 import RootLayout from "@/layouts/RootLayout";
-import { useUser, useUserProfile } from "@/utils";
 
 import UserPageBasicInfo from "./Sections/BasicInfo";
 import UserPageTabs from "./Sections/Tabs";

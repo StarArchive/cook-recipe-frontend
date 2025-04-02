@@ -3,8 +3,8 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 
 import { getImageUrl } from "@/client";
+import { getUserDisplayName } from "@/client/hooks";
 import type { User, UserProfile } from "@/client/types";
-import { getUserDisplayName } from "@/utils";
 
 interface Props {
   user: User;
@@ -26,7 +26,7 @@ export default function UserPageBasicInfo({ user, profile }: Props) {
     <div className="flex flex-row gap-4 px-4 py-8">
       <div className="relative h-32 w-32 rounded-full">
         {profile.avatar ? (
-          <Avatar src={avatarUrl} alt={displayName} h="100%" w="100%" />
+          <Avatar src={avatarUrl} alt={displayName || ""} h="100%" w="100%" />
         ) : (
           <div className="absolute inset-0 animate-pulse rounded-full bg-gray-200" />
         )}

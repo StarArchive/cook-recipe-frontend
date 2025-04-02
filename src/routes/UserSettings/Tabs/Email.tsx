@@ -3,8 +3,8 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { TbCheck, TbX } from "react-icons/tb";
 
+import { useUserMutation } from "@/client/hooks";
 import type { User } from "@/client/types";
-import { useUserMutation } from "@/utils";
 
 interface Props {
   user: User;

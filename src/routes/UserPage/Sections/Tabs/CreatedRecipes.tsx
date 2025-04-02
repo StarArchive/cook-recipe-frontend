@@ -1,7 +1,7 @@
 import { SimpleGrid, Skeleton } from "@mantine/core";
 
+import { useUserRecipes } from "@/client/hooks";
 import RecipeGrid from "@/components/RecipeGrid";
-import { useUserRecipes } from "@/utils";
 
 import EmptyState from "./EmptyState";
 

@@ -33,7 +33,7 @@ export default function RootLayout({ children }: Props) {
     <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>
         <Group
-          className="items-center px-6 md:px-8 xl:px-12"
+          className="items-center max-md:px-6 md:mx-auto md:w-4/7"
           h="100%"
           justify="space-between"
         >
@@ -44,7 +44,6 @@ export default function RootLayout({ children }: Props) {
               hiddenFrom="sm"
               size="sm"
             />
-
             <Anchor
               c={computedColorScheme === "dark" ? "gray" : "dark"}
               component={Link}
@@ -69,7 +68,7 @@ export default function RootLayout({ children }: Props) {
               }}
             />
           </Group>
-          <Group>
+          <Group className="max-md:hidden">
             <UserActions />
           </Group>
         </Group>

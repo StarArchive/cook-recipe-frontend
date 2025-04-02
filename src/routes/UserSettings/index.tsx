@@ -1,9 +1,9 @@
 import { Container, Tabs, Title } from "@mantine/core";
 import { TbLock, TbMail, TbUser } from "react-icons/tb";
 
+import { useCurrentUser, useUserProfile } from "@/client/hooks";
 import type { User, UserProfile } from "@/client/types";
 import RootLayout from "@/layouts/RootLayout";
-import { useCurrentUser, useUserProfile } from "@/utils";
 
 import EmailTab from "./Tabs/Email";
 import PasswordTab from "./Tabs/Password";
