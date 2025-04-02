@@ -1,4 +1,4 @@
-import { Button, HoverCard, Text } from "@mantine/core";
+import { Avatar, Button, HoverCard, Text } from "@mantine/core";
 import {
   TbLogout,
   TbReceipt,
@@ -9,11 +9,12 @@ import {
 import { useSWRConfig } from "swr";
 import { Link, useLocation } from "wouter";
 
-import { logout } from "@/client";
-import { getUserDisplayName, useCurrentUser } from "@/utils";
+import { getImageUrl, logout } from "@/client";
+import { useCurrentUser, useUserProfile } from "@/client/hooks";
 
 export default function UserActions() {
   const { user, isLoading, isError } = useCurrentUser();
+  const { profile } = useUserProfile(user?.id.toString());
   const [, navigate] = useLocation();
   const { mutate } = useSWRConfig();
 
@@ -66,7 +67,7 @@ export default function UserActions() {
     <>
       <HoverCard>
         <HoverCard.Target>
-          <Text>{getUserDisplayName(user)}</Text>
+          <Avatar src={getImageUrl(profile?.avatar || "").toString()} />
         </HoverCard.Target>
         <HoverCard.Dropdown p="xs">
           <div className="flex flex-col">
