@@ -60,6 +60,7 @@ export interface Recipe {
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
   images: string[];
+  published: boolean;
 }
 
 export interface UploadFileResponse {
@@ -91,4 +92,31 @@ export interface Category {
 
 export interface CategoryWithChildren extends Category {
   children: CategoryWithChildren[];
+}
+
+export const CollectionType = {
+  DEFAULT: "DEFAULT",
+  MANUAL: "MANUAL",
+};
+
+export type CollectionType = keyof typeof CollectionType;
+
+export interface Collection {
+  id: number;
+  name: string;
+  description: string | null;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: number;
+  type: CollectionType;
+  recipes: Recipe[];
+}
+
+export interface CreateCollectionDto {
+  name: string;
+  description?: string;
+  type?: CollectionType;
+  isPublic?: boolean;
+  recipeIds?: number[];
 }

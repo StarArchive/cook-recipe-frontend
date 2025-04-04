@@ -4,22 +4,27 @@ import useSWRMutation from "swr/mutation";
 import { convertToTree } from "./utils";
 
 import {
+  addRecipeToCollections,
   changePassword,
+  createCollection,
+  deleteCollection,
   getCategories,
   getCategory,
+  getCollection,
+  getCollections,
+  getCollectionsByRecipeId,
   getRecipe,
+  getRecipeDrafts,
   getRecipesByCategoryId,
   getRecipesByUserId,
-  getRecipeStarred,
   getUser,
   getUserProfile,
-  getUserStarredRecipes,
   searchRecipes,
-  starRecipe,
+  updateCollection,
   updateMe,
 } from ".";
 
-import type { ChangeUserPasswordDto, User } from "./types";
+import type { ChangeUserPasswordDto, CreateCollectionDto, User } from "./types";
 
 export function useUser(id: string) {
   const { data, error, isLoading } = useSWR(`/users/${id}`, () => getUser(id));
@@ -44,9 +49,7 @@ export function useUserProfile(id?: string) {
 }
 
 export function useCurrentUser() {
-  const { data, error, isLoading } = useSWR("/users/me", () => getUser(), {
-    shouldRetryOnError: false,
-  });
+  const { data, error, isLoading } = useSWR("/users/me", () => getUser());
 
   return {
     user: data,
@@ -125,45 +128,6 @@ export function getUserDisplayName(user: {
   return user.nickname || user.name;
 }
 
-export function useUserStarredRecipes(userId: number) {
-  const { data, error, isLoading } = useSWR(`/user/${userId}/starred`, () =>
-    getUserStarredRecipes(userId),
-  );
-
-  return {
-    starred: data,
-    isLoading,
-    isError: error,
-  };
-}
-
-export function useRecipeStarred(recipeId: number | string) {
-  const {
-    data: { starred } = {},
-    error,
-    isLoading,
-  } = useSWR(`/recipes/${recipeId}/starred`, () => getRecipeStarred(recipeId));
-
-  return {
-    starred,
-    isLoading,
-    isError: error,
-  };
-}
-
-export function useRecipeStarredMutation(recipeId: number | string) {
-  const { trigger, isMutating, error } = useSWRMutation(
-    `/recipes/${recipeId}/starred`,
-    () => starRecipe(recipeId),
-  );
-
-  return {
-    trigger,
-    isMutating,
-    error,
-  };
-}
-
 export function useRecipeSearch(query: string) {
   const { data, error, isLoading } = useSWR(
     `/recipes/search?query=${query}`,
@@ -223,5 +187,107 @@ export function useCategory(id: string) {
     category: data,
     isLoading,
     isError: error,
+  };
+}
+
+export function useRecipeDrafts() {
+  const { data, error, isLoading } = useSWR("/recipes/drafts", () =>
+    getRecipeDrafts(),
+  );
+
+  return {
+    drafts: data,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useCollections(userId?: string | number) {
+  const { data, error, isLoading } = useSWR("/collections", () =>
+    getCollections(userId),
+  );
+
+  return {
+    collections: data,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useCollectionMutation() {
+  const { trigger, isMutating, error } = useSWRMutation(
+    "/collections",
+    (_url, { arg }: { arg: CreateCollectionDto }) => createCollection(arg),
+  );
+  return {
+    trigger,
+    isMutating,
+    error,
+  };
+}
+
+export function useCollection(id: string | number) {
+  const { data, error, isLoading } = useSWR(`/collections/${id}`, () =>
+    getCollection(id),
+  );
+
+  return {
+    collection: data,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useCollectionEditMutation(id: string | number) {
+  const { trigger, isMutating, error } = useSWRMutation(
+    "/collections",
+    (_url: string, { arg }: { arg: Partial<CreateCollectionDto> }) =>
+      updateCollection(id, arg),
+  );
+
+  return {
+    trigger,
+    isMutating,
+    error,
+  };
+}
+
+export function useCollectionDeleteMutation() {
+  const { trigger, isMutating, error } = useSWRMutation(
+    "/collections",
+    (_url, { arg }: { arg: string | number }) => deleteCollection(arg),
+  );
+
+  return {
+    trigger,
+    isMutating,
+    error,
+  };
+}
+
+export function useCollectionsByRecipeId(recipeId: string | number) {
+  const { data, error, isLoading } = useSWR(
+    `/collections/recipes/${recipeId}`,
+    () => getCollectionsByRecipeId(recipeId),
+  );
+
+  return {
+    collections: data,
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useAddRecipeToCollectionsMutation(recipeId: string | number) {
+  const { trigger, isMutating, error } = useSWRMutation(
+    `/collections/recipes/${recipeId}`,
+    (_url: string, { arg }: { arg: { collectionIds: number[] } }) =>
+      addRecipeToCollections(arg.collectionIds, recipeId),
+  );
+
+  return {
+    trigger,
+    isMutating,
+    error,
   };
 }
