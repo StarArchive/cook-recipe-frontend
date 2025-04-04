@@ -20,7 +20,7 @@ export default function UserPage({ id, tabAnchor }: Props) {
 
   return (
     <RootLayout>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <UserPageBasicInfo user={user} profile={profile} />
         <UserPageTabs
           id={user.id}

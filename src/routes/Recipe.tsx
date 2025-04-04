@@ -2,6 +2,8 @@ import {
   ActionIcon,
   Anchor,
   Avatar,
+  Button,
+  Checkbox,
   Container,
   Divider,
   Group,
@@ -9,18 +11,21 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useMemo } from "react";
+import { modals } from "@mantine/modals";
+import { useMemo, useState } from "react";
 import { TbEdit, TbStar } from "react-icons/tb";
 import { Link, useLocation } from "wouter";
 
 import { getImageUrl } from "@/client";
 import {
   getUserDisplayName,
+  useAddRecipeToCollectionsMutation,
+  useCollections,
+  useCollectionsByRecipeId,
   useCurrentUser,
   useRecipe,
-  useRecipeStarred,
-  useRecipeStarredMutation,
 } from "@/client/hooks";
+import type { Collection, Recipe } from "@/client/types";
 import ImagesCarousel from "@/components/ImagesCarousel";
 import IngredientsTable from "@/components/IngredientsTable";
 import RecipeStep from "@/components/RecipeStep";
@@ -32,12 +37,88 @@ interface Props {
   id: string;
 }
 
+function RecipeStarForm({
+  recipeId,
+  collections,
+  starredCollections,
+}: {
+  recipeId: string | number;
+  collections: Collection[];
+  starredCollections: Collection[];
+}) {
+  const [value, setValue] = useState<string[]>(
+    starredCollections.map((c) => c.id.toString()),
+  );
+  const { trigger } = useAddRecipeToCollectionsMutation(recipeId);
+
+  return (
+    <>
+      <Checkbox.Group value={value} onChange={setValue}>
+        <Stack mt="xs">
+          {collections.map((collection) => (
+            <Checkbox
+              key={collection.id}
+              label={`${collection.name}${!collection.isPublic ? " [私密]" : ""}`}
+              value={collection.id.toString()}
+            />
+          ))}
+        </Stack>
+      </Checkbox.Group>
+
+      <Group justify="flex-end" mt="md">
+        <Button
+          fullWidth
+          onClick={() => {
+            trigger({
+              collectionIds: value.map((collectionId) =>
+                Number.parseInt(collectionId),
+              ),
+            });
+            modals.closeAll();
+          }}
+        >
+          确定
+        </Button>
+      </Group>
+    </>
+  );
+}
+
+function RecipeStar({ recipe }: { recipe: Recipe }) {
+  const { collections } = useCollections();
+  const { collections: starredCollections } = useCollectionsByRecipeId(
+    recipe.id,
+  );
+
+  return (
+    <ActionIcon
+      variant="subtle"
+      size="lg"
+      color={
+        starredCollections && starredCollections.length > 0 ? "yellow" : "gray"
+      }
+      onClick={() =>
+        modals.open({
+          title: "添加到收藏夹",
+          children: (
+            <RecipeStarForm
+              recipeId={recipe.id}
+              collections={collections!}
+              starredCollections={starredCollections!}
+            />
+          ),
+        })
+      }
+    >
+      <TbStar size={20} />
+    </ActionIcon>
+  );
+}
+
 export default function Recipe({ id }: Props) {
   const [, navigate] = useLocation();
   const { user } = useCurrentUser();
   const { recipe, isLoading } = useRecipe(id);
-  const { starred } = useRecipeStarred(id);
-  const { trigger } = useRecipeStarredMutation(id);
   const avatarUrl = useMemo(
     () =>
       recipe?.author.profile.avatar &&
@@ -81,16 +162,7 @@ export default function Recipe({ id }: Props) {
                   <TbEdit size={20} />
                 </ActionIcon>
               )}
-              <ActionIcon
-                variant="subtle"
-                size="lg"
-                color={starred ? "yellow" : "gray"}
-                onClick={() => {
-                  trigger();
-                }}
-              >
-                <TbStar size={20} />
-              </ActionIcon>
+              {recipe.published && <RecipeStar recipe={recipe} />}
             </Title>
             <ImagesCarousel images={recipe.images} title={recipe.title} />
             <Divider my="md" />
@@ -101,7 +173,7 @@ export default function Recipe({ id }: Props) {
             >
               <Avatar
                 src={avatarUrl}
-                alt={displayName}
+                alt={displayName || ""}
                 className="cursor-pointer"
               ></Avatar>
               <Anchor underline="never" component={Link}>

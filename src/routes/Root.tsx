@@ -77,13 +77,7 @@ function SidebarItem({
 
 function Sidebar() {
   return (
-    <Flex
-      className="max-md:hidden"
-      direction="column"
-      align="start"
-      gap="lg"
-      p="md"
-    >
+    <Flex className="max-md:hidden" direction="column" align="start" gap="lg">
       {sidebarConfig.map((item, index) => (
         <SidebarItem
           key={index}
@@ -135,7 +129,7 @@ export default function Root() {
 
   return (
     <RootLayout>
-      <div className="flex gap-4 md:mx-auto md:w-8/13">
+      <div className="flex gap-16 md:mx-auto md:max-w-4xl">
         <Sidebar />
         {!isLoading && <RecipeCardList recipes={recipes} />}
       </div>

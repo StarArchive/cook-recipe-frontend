@@ -1,8 +1,8 @@
 import { Tabs } from "@mantine/core";
 import { TbChefHat, TbHeart } from "react-icons/tb";
 
+import UserPageStarredRecipesTab from "./Collections";
 import UserPageCreatedRecipeTab from "./CreatedRecipes";
-import UserPageStarredRecipesTab from "./StarredRecipes";
 
 interface Props {
   id: number;

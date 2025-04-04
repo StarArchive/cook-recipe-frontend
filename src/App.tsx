@@ -1,4 +1,5 @@
 import { MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import { SWRConfig } from "swr";
@@ -6,6 +7,7 @@ import { Route, Switch, useLocation, useSearchParams } from "wouter";
 
 import Category from "@/routes/Category";
 import CategoryList from "@/routes/CategoryList";
+import Draft from "@/routes/Draft";
 import Login from "@/routes/Login";
 import NotFound from "@/routes/NotFound";
 import Recipe from "@/routes/Recipe";
@@ -31,43 +33,41 @@ export default function App() {
   }, [location, query]);
 
   return (
-    <SWRConfig>
+    <SWRConfig value={{ shouldRetryOnError: false }}>
       <MantineProvider classNamesPrefix="app" defaultColorScheme="auto">
-        <Switch>
-          <Route path="/" component={Root} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
-          <Route path="/recipe/new" component={Upload} />
-          <Route path="/recipe/:id">
-            {(params) => <Recipe id={params.id} />}
-          </Route>
-          <Route path="/recipe/:id/edit">
-            {(params) => <RecipeEdit id={params.id} />}
-          </Route>
-          <Route path="/user/:id">
-            {(params) => (
-              <UserPage id={params.id} tabAnchor="created-recipes" />
-            )}
-          </Route>
-          <Route path="/user/:id/:tab">
-            {(params) => <UserPage id={params.id} tabAnchor={params.tab} />}
-          </Route>
-          <Route path="/category/" component={CategoryList} />
-          <Route path="/category/:id">
-            {(params) => (
-              <Category
-                id={params.id}
-                title={searchParams.get("title") || ""}
-              />
-            )}
-          </Route>
-          <Route path="/settings" component={UserSettings} />
-          <Route path="/search" component={Search} />
-          <Route>
-            <NotFound />
-          </Route>
-        </Switch>
-        <Notifications />
+        <ModalsProvider>
+          <Switch>
+            <Route path="/" component={Root} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+            <Route path="/recipe/drafts" component={Draft} />
+            <Route path="/recipe/new" component={Upload} />
+            <Route path="/recipe/:id">
+              {(params) => <Recipe id={params.id} />}
+            </Route>
+            <Route path="/recipe/:id/edit">
+              {(params) => <RecipeEdit id={params.id} />}
+            </Route>
+            <Route path="/user/:id">
+              {(params) => (
+                <UserPage id={params.id} tabAnchor="created-recipes" />
+              )}
+            </Route>
+            <Route path="/user/:id/:tab">
+              {(params) => <UserPage id={params.id} tabAnchor={params.tab} />}
+            </Route>
+            <Route path="/category/" component={CategoryList} />
+            <Route path="/category/:id">
+              {(params) => <Category id={params.id} />}
+            </Route>
+            <Route path="/settings" component={UserSettings} />
+            <Route path="/search" component={Search} />
+            <Route>
+              <NotFound />
+            </Route>
+          </Switch>
+          <Notifications />
+        </ModalsProvider>
       </MantineProvider>
     </SWRConfig>
   );

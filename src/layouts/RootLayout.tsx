@@ -33,7 +33,7 @@ export default function RootLayout({ children }: Props) {
     <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>
         <Group
-          className="items-center max-md:px-6 md:mx-auto md:w-4/7"
+          className="items-center max-md:px-6 md:mx-auto md:max-w-4xl"
           h="100%"
           justify="space-between"
         >
