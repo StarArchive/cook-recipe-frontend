@@ -1,6 +1,7 @@
 import { Avatar, Button, HoverCard, Text } from "@mantine/core";
 import {
   TbLogout,
+  TbPaperBag,
   TbReceipt,
   TbSettings,
   TbStar,
@@ -31,6 +32,13 @@ export default function UserActions() {
       text: "收藏列表",
       onClick: () => {
         navigate(`/user/${user?.id}/starred-recipes`);
+      },
+    },
+    {
+      icon: <TbPaperBag size={14} />,
+      text: "我的草稿",
+      onClick: () => {
+        navigate("/recipe/drafts");
       },
     },
     {
