@@ -120,3 +120,14 @@ export interface CreateCollectionDto {
   isPublic?: boolean;
   recipeIds?: number[];
 }
+
+enum MessageRole {
+  USER = "user",
+  SYSTEM = "system",
+  ASSISTANT = "assistant",
+}
+
+export interface RecipeChatMessageDto {
+  role: MessageRole;
+  content: string;
+}

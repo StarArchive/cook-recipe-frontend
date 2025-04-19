@@ -9,6 +9,7 @@ import type {
   CreateRecipeDto,
   LoginDto,
   Recipe,
+  RecipeChatMessageDto,
   RegisterDto,
   UploadFileResponse,
   User,
@@ -215,5 +216,15 @@ export async function addRecipeToCollections(
 ): Promise<Collection> {
   return fetchWithToken("POST", `/recipes/${recipeId}/addToCollections`, {
     collectionIds,
+  });
+}
+
+export async function chatRecipe(
+  recipeId: number,
+  messages: RecipeChatMessageDto[],
+): Promise<{ message: string }> {
+  return fetchWithToken("POST", "/chat/recipe", {
+    recipeId,
+    messages,
   });
 }

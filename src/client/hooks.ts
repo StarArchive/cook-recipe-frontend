@@ -6,6 +6,7 @@ import { convertToTree } from "./utils";
 import {
   addRecipeToCollections,
   changePassword,
+  chatRecipe,
   createCollection,
   deleteCollection,
   getCategories,
@@ -24,7 +25,12 @@ import {
   updateMe,
 } from ".";
 
-import type { ChangeUserPasswordDto, CreateCollectionDto, User } from "./types";
+import type {
+  ChangeUserPasswordDto,
+  CreateCollectionDto,
+  RecipeChatMessageDto,
+  User,
+} from "./types";
 
 export function useUser(id: string) {
   const { data, error, isLoading } = useSWR(`/users/${id}`, () => getUser(id));
@@ -283,6 +289,20 @@ export function useAddRecipeToCollectionsMutation(recipeId: string | number) {
     `/collections/recipes/${recipeId}`,
     (_url: string, { arg }: { arg: { collectionIds: number[] } }) =>
       addRecipeToCollections(arg.collectionIds, recipeId),
+  );
+
+  return {
+    trigger,
+    isMutating,
+    error,
+  };
+}
+
+export function useChatRecipeMutation(recipeId: number) {
+  const { trigger, isMutating, error } = useSWRMutation(
+    `/recipes/chat?recipeId=${recipeId}`,
+    (_url: string, { arg }: { arg: { messages: RecipeChatMessageDto[] } }) =>
+      chatRecipe(recipeId, arg.messages),
   );
 
   return {
