@@ -1,4 +1,4 @@
-import { Avatar, Button, HoverCard, Text } from "@mantine/core";
+import { Avatar, Button, HoverCard, Skeleton, Text } from "@mantine/core";
 import {
   TbLogout,
   TbPaperBag,
@@ -58,7 +58,14 @@ export default function UserActions() {
     },
   ];
 
-  if (isLoading) return null;
+  if (isLoading)
+    return (
+      <>
+        <Skeleton height={38} circle />
+        <Skeleton height={36} width={84} />
+      </>
+    );
+
   if (!user?.name || isError)
     return (
       <>
