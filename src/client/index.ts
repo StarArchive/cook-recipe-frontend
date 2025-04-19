@@ -71,7 +71,7 @@ export async function fetchWithToken(
   });
   const json = await response.json();
 
-  if (json?.message == "Unauthorized") {
+  if (json?.message == "Unauthorized" && !!localStorage.getItem("token")) {
     localStorage.removeItem("token");
     notifications.show({
       id: "login-expired",
