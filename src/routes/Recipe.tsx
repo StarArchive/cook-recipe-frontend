@@ -78,8 +78,8 @@ function RecipeChat({ recipeId }: { recipeId: string }) {
     });
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const defaultSize = { width: 320, height: 400 };
-  const expandedSize = { width: 500, height: 600 };
+  const defaultSize = { width: 400, height: 550 };
+  const expandedSize = { width: 600, height: 725 };
 
   useEffect(() => {
     if (messages.length > 0) {
