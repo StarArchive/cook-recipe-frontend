@@ -6,6 +6,7 @@ import {
   Container,
   Flex,
   Group,
+  MultiSelect,
   TextInput,
   Textarea,
 } from "@mantine/core";
@@ -21,31 +22,24 @@ import type { CreateRecipeDto } from "@/client/types";
 
 import GalleryPhotoPicker from "./GalleryPhotoPicker";
 
+interface CreateRecipeFormValues extends Omit<CreateRecipeDto, "categoryIds"> {
+  categoryIds: string[];
+}
+
 interface Props {
-  values?: CreateRecipeDto;
+  values?: CreateRecipeFormValues;
   isEdit?: boolean;
   recipeId?: string;
 }
 
-const RECIPE_FORM_CONFIG = {
-  initialValues: {
-    title: "",
-    description: "",
-    published: true,
-    ingredients: [],
-    steps: [],
-    images: [],
-  },
-
-  transformValues: (values: CreateRecipeDto) => ({
-    ...values,
-    steps: values.steps.map((step, idx) => ({
-      order: idx,
-      content: step.content,
-      images: step.images,
-    })),
-  }),
-};
+const CATEGORY_OPTIONS = [
+  { value: "24", label: "早餐" },
+  { value: "378", label: "鱼" },
+  { value: "422", label: "鸡蛋" },
+  { value: "321", label: "汤羹" },
+  { value: "47", label: "烘焙" },
+  { value: "458", label: "面条" },
+];
 
 export default function RecipeForm({ values, isEdit, recipeId }: Props) {
   const [, navigate] = useLocation();
@@ -55,9 +49,34 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
   );
   const [stepFiles, setStepFiles] = useState<File[]>([]);
 
-  const form = useForm<CreateRecipeDto>({
-    ...RECIPE_FORM_CONFIG,
-    ...(values && { initialValues: values }),
+  const form = useForm<
+    CreateRecipeFormValues,
+    (values: CreateRecipeFormValues) => CreateRecipeDto
+  >({
+    initialValues: {
+      title: "",
+      description: "",
+      categoryIds: [],
+      published: true,
+      ingredients: [],
+      steps: [],
+      images: [],
+      ...(!isEdit && {
+        ingredients: [{ name: "", quantity: "" }],
+        steps: [{ order: 0, content: "", images: [] }],
+      }),
+      ...values,
+    },
+
+    transformValues: (values) => ({
+      ...values,
+      steps: values.steps.map((step, idx) => ({
+        order: idx,
+        content: step.content,
+        images: step.images,
+      })),
+      categoryIds: values.categoryIds.map((id) => Number.parseInt(id, 10)),
+    }),
   });
 
   const uploadMutation = useSWRMutation(
@@ -113,6 +132,7 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
   const handleSubmit = async () => {
     const uploadedStepsImages = await uploadImages(stepFiles);
     const values = form.getTransformedValues();
+    console.log("values", values);
     const steps = values.steps.map((step, idx) => ({
       ...step,
       images: uploadedStepsImages[idx] ? [uploadedStepsImages[idx]] : [],
@@ -153,6 +173,13 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
             autosize
             minRows={2}
             {...form.getInputProps("description")}
+          />
+          <MultiSelect
+            label="分类"
+            placeholder="选择分类"
+            data={CATEGORY_OPTIONS}
+            multiple
+            {...form.getInputProps("categoryIds")}
           />
           <Checkbox
             label="是否发布"

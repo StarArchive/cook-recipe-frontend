@@ -29,6 +29,7 @@ export interface CreateRecipeDto {
   ingredients: { name: string; quantity: string }[];
   steps: RecipeStep[];
   images: string[];
+  categoryIds: number[];
 }
 
 export interface RecipeAuthor {
