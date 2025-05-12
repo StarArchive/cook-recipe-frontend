@@ -47,7 +47,14 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
   const [initialImages, setInitialImages] = useState<string[]>(
     values?.images || [],
   );
-  const [stepFiles, setStepFiles] = useState<File[]>([]);
+  const [stepFiles, setStepFiles] = useState<Record<number, File[]>>({});
+
+  const handleStepFilesChange = (index: number, files: File[]) => {
+    setStepFiles((prev) => ({
+      ...prev,
+      [index]: files,
+    }));
+  };
 
   const form = useForm<
     CreateRecipeFormValues,
@@ -130,12 +137,14 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
   );
 
   const handleSubmit = async () => {
-    const uploadedStepsImages = await uploadImages(stepFiles);
+    const uploadedStepsImages = await Promise.all(
+      form.values.steps.map((_, index) => uploadImages(stepFiles[index] || [])),
+    );
+
     const values = form.getTransformedValues();
-    console.log("values", values);
     const steps = values.steps.map((step, idx) => ({
       ...step,
-      images: uploadedStepsImages[idx] ? [uploadedStepsImages[idx]] : [],
+      images: [...(step.images || []), ...(uploadedStepsImages[idx] || [])],
     }));
 
     const uploadedCovers = await uploadImages(files);
@@ -247,12 +256,14 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
               />
               <GalleryPhotoPicker
                 maxCount={1}
-                onChange={setStepFiles}
+                onChange={(files) => handleStepFilesChange(index, files)}
                 initialImages={values?.steps[index]?.images.map((image) =>
                   getImageUrl(image).toString(),
                 )}
-                onInitialImagesChange={() => {
-                  form.setFieldValue(`steps.${index}.images`, []);
+                onInitialImagesChange={(newImages) => {
+                  const updatedSteps = [...form.values.steps];
+                  updatedSteps[index].images = newImages;
+                  form.setValues({ ...form.values, steps: updatedSteps });
                 }}
               />
               <ActionIcon

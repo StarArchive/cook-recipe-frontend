@@ -45,6 +45,7 @@ export default function GalleryPhotoPicker({
             onImageClick={() => setPreviewUrl(imageUrl)}
             onActionClick={() => {
               const newImages = initialImages.filter((_, i) => i !== index);
+              console.log("newImages", newImages);
               onInitialImagesChange?.(newImages);
             }}
           />
