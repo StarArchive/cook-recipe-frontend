@@ -17,7 +17,13 @@ import { TbPlus, TbX } from "react-icons/tb";
 import useSWRMutation from "swr/mutation";
 import { useLocation } from "wouter";
 
-import { createRecipe, getImageUrl, updateRecipe, uploadFiles } from "@/client";
+import {
+  createRecipe,
+  getImageUrl,
+  trimImageUrl,
+  updateRecipe,
+  uploadFiles,
+} from "@/client";
 import type { CreateRecipeDto } from "@/client/types";
 
 import GalleryPhotoPicker from "./GalleryPhotoPicker";
@@ -144,7 +150,10 @@ export default function RecipeForm({ values, isEdit, recipeId }: Props) {
     const values = form.getTransformedValues();
     const steps = values.steps.map((step, idx) => ({
       ...step,
-      images: [...(step.images || []), ...(uploadedStepsImages[idx] || [])],
+      images: [
+        ...(step.images?.map(trimImageUrl) || []),
+        ...(uploadedStepsImages[idx] || []),
+      ],
     }));
 
     const uploadedCovers = await uploadImages(files);

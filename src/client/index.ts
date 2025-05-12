@@ -36,6 +36,10 @@ export function getImageUrl(image: string) {
   return new URL(image, IMAGE_BASE_URL);
 }
 
+export function trimImageUrl(image: string) {
+  return image.replace(IMAGE_BASE_URL, "");
+}
+
 export function transformBody(body?: unknown) {
   if (!body) return {};
   if (body instanceof FormData) return { body };

@@ -6,7 +6,6 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { GiNoodles } from "react-icons/gi";
 import { TbCake, TbEggs, TbFileX, TbFish, TbSoup, TbSun } from "react-icons/tb";
 import useSWR from "swr";
 import { useLocation } from "wouter";
@@ -41,11 +40,6 @@ const sidebarConfig = [
     icon: <TbCake className="text-pink-500" size={32} />,
     text: "烘焙",
     to: "/category/47",
-  },
-  {
-    icon: <GiNoodles className="text-yellow-600" size={32} />,
-    text: "面条",
-    to: "/category/458",
   },
 ];
 
