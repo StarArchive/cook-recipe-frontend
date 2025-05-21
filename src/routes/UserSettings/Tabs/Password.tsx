@@ -12,7 +12,7 @@ const PASSWORD_FORM_CONFIG = {
     confirmPassword: "",
   },
   validate: {
-    currentPassword: (value: string) => (!value ? "请输入当前密码" : null),
+    oldPassword: (value: string) => (!value ? "请输入当前密码" : null),
     newPassword: (value: string) => (!value ? "请输入新密码" : null),
     confirmPassword: (value: string, values: { newPassword: string }) =>
       value !== values.newPassword ? "两次输入的密码不匹配" : null,
